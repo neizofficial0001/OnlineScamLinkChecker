@@ -100,7 +100,7 @@
   .rail-pulse{width:7px;height:7px;border-radius:50%;background:var(--safe);box-shadow:0 0 8px var(--safe);animation:blink 2s ease-in-out infinite;margin-bottom:4px}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-  .main{flex:1;min-width:0;padding:38px 40px 100px;max-width:920px;margin-left:auto;margin-right:auto}
+  .main{flex:1;min-width:0;padding:38px 40px 100px;max-width:920px;margin:0 auto;width:100%}
 
   .topline{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px}
   .topline h1{font-family:var(--font-display);font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
@@ -353,7 +353,6 @@
 
   <main class="main">
 
-    <!-- SCAN -->
     <div class="panel active" id="panel-check">
       <div class="topline">
         <h1>Scan Console</h1>
@@ -424,7 +423,6 @@
       </div>
     </div>
 
-    <!-- EXTRACT -->
     <div class="panel" id="panel-extract">
       <div class="topline"><h1>Link Extractor</h1></div>
       <p class="lede">Paste a full message or email. Every URL inside gets pulled out and queued for scanning.</p>
@@ -436,7 +434,6 @@
       </div>
     </div>
 
-    <!-- AI ANALYST -->
     <div class="panel" id="panel-ai">
       <div class="topline"><h1>AI Analyst</h1></div>
       <p class="lede">Paste a message, link, or describe what happened — get a straight read on whether it's a scam.</p>
@@ -462,7 +459,6 @@
       </div>
     </div>
 
-    <!-- TOOLS -->
     <div class="panel" id="panel-tools">
       <div class="topline"><h1>Toolkit</h1></div>
       <p class="lede">Ten offline heuristic tools. Nothing here calls out to a server except the blacklist and AI features.</p>
@@ -481,7 +477,6 @@
       <div class="card" id="toolResult" style="display:none"><div id="toolOutput"></div></div>
     </div>
 
-    <!-- HISTORY -->
     <div class="panel" id="panel-history">
       <div class="topline"><h1>Scan Log</h1></div>
       <p class="lede">Everything scanned this session, most recent first.</p>
@@ -494,7 +489,6 @@
       </div>
     </div>
 
-    <!-- SETTINGS -->
     <div class="panel" id="panel-settings">
       <div class="topline"><h1>Settings</h1></div>
       <p class="lede">Theme, background, density, and detection sensitivity — all local to this session.</p>
