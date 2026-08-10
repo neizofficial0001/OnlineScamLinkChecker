@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://js.puter.com/v2/"></script>
 <style>
   :root{
     --black:#050506;
@@ -442,7 +443,7 @@
         <div class="ai-head">
           <span class="pip"></span>
           <span class="name">Security Analyst</span>
-          <span class="sub">local · offline</span>
+          <span class="sub">puter · free</span>
         </div>
         <div class="ai-msgs" id="aiMsgs">
           <div class="msg ai"><span class="tag">Analyst</span>I read scam messages, sketchy links, and weird texts and tell you straight what's going on. Paste something in, or tap a prompt below.</div>
@@ -1300,6 +1301,29 @@ Common patterns I flag quickly: package delivery texts, bank "verify your accoun
 **Never share passwords, 2FA codes, or seed phrases** with anyone — including this tool.`;
 }
 
+const AI_SYSTEM = `You are the Security Analyst inside ScamGuard. Assess scam/phishing risk from messages, links, or descriptions.
+
+Rules:
+- Start with a clear verdict: Likely Scam, Suspicious, or Likely Legitimate.
+- List specific red flags in plain language.
+- Give concrete next steps (what to do / not do).
+- Never ask for passwords, 2FA codes, or seed phrases. Tell the user never to share those.
+- Keep answers short and skimmable (short paragraphs or "- " bullets).
+- If ambiguous, say so.`;
+
+async function callPuterAI(userText){
+  if(typeof puter === "undefined" || !puter.ai || !puter.ai.chat) throw new Error("puter unavailable");
+  const prompt = AI_SYSTEM + "\n\nUser message:\n" + userText;
+  const result = await puter.ai.chat(prompt, { model: "gpt-4.1-nano" });
+  if(typeof result === "string") return result.trim();
+  if(result && typeof result === "object"){
+    if(result.message) return String(result.message).trim();
+    if(result.text) return String(result.text).trim();
+    if(result.content) return String(result.content).trim();
+  }
+  return String(result || "").trim() || "No response generated.";
+}
+
 async function sendAiMessage(overrideText){
   const text=(overrideText!==undefined?overrideText:aiInput.value).trim();
   if(!text) return;
@@ -1309,10 +1333,16 @@ async function sendAiMessage(overrideText){
   aiSendBtn.disabled=true;
   showTyping();
 
-  // Small delay so the typing indicator feels natural
-  await sleep(450 + Math.random()*350);
+  let reply = "";
+  try{
+    reply = await callPuterAI(text);
+  }catch(e){
+    // Free API unavailable — use built-in offline analyzer
+    await sleep(300);
+    reply = localAnalyze(text);
+  }
   hideTyping();
-  const reply=localAnalyze(text);
+  if(!reply) reply = localAnalyze(text);
   addMsg("ai",reply);
   aiHistory.push({role:"assistant",content:reply});
   aiSendBtn.disabled=false;
