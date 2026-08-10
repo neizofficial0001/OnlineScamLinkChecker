@@ -684,7 +684,7 @@ document.getElementById("exportHistoryBtn").addEventListener("click",()=>{
 function normalizeUrl(raw){
   let s=(raw||"").trim();
   if(!s) return null;
-  if(!/^https?:\/\//i.test(s)) s="https://"+s;
+  if(!/^https?:\/\
   try{ return new URL(s); }catch{ return null; }
 }
 function isIpAddress(host){ return /^\d{1,3}(\.\d{1,3}){3}$/.test(host); }
@@ -1134,7 +1134,6 @@ function hideTyping(){ const t=document.getElementById("aiTyping"); if(t) t.remo
 function localAnalyze(text){
   const t=text.toLowerCase();
 
-  // Scan-result summary from "Ask AI Analyst"
   if(t.includes("here's a scan result") || t.includes("verdict:") && t.includes("score")){
     if(t.includes("known scam") || t.includes("high risk") || /score\s*(9\d|100)/.test(t)){
       return `**Likely Scam / High Risk**
@@ -1171,7 +1170,6 @@ No major red flags in the heuristic + blacklist pass.
 If something still feels off, describe the full message and I can dig further.`;
   }
 
-  // Package / delivery scam
   if(/package|parcel|delivery|could not be delivered|track.*(package|order)|bit\.ly\/pkg|confirm your address/.test(t)){
     return `**Likely Scam** — classic package / delivery text pattern
 
@@ -1190,7 +1188,6 @@ What to do:
 Real carriers almost never ask you to "confirm" personal details via a random SMS link.`;
   }
 
-  // Bank / account verification / phone call
   if(/bank|account.*(verify|suspend|lock|unusual)|verify.*(account|identity)|call.*(bank|support)|security.*(department|team)|otp|one.?time.?password|card.*(block|fraud)/.test(t)){
     return `**Likely Scam** — bank / account impersonation pattern
 
@@ -1211,7 +1208,6 @@ Safe steps:
 - If you already gave info, freeze the card/account and report to the bank right away`;
   }
 
-  // Crypto / NFT / airdrop
   if(/crypto|nft|airdrop|wallet|seed.?phrase|metamask|binance|coinbase|claim.*(token|reward|nft)|connect.?wallet|gas.?fee/.test(t)){
     return `**Likely Scam** — common crypto / NFT airdrop pattern
 
@@ -1230,7 +1226,6 @@ Rules that keep you safe:
 If you already connected a wallet to a suspicious site, move funds to a new wallet (new seed) as soon as possible and revoke approvals on a trusted tool.`;
   }
 
-  // Gift card / payment request
   if(/gift.?card|itunes|steam.?card|google.?play.?card|wire.?transfer|western.?union|send.*(money|payment)|pay.*(fee|tax|release)/.test(t)){
     return `**Likely Scam** — payment / gift-card demand
 
@@ -1243,7 +1238,6 @@ Legitimate companies, government agencies, and banks do **not** ask you to pay f
 If you already paid, contact the gift-card issuer / payment provider immediately and file a report with local authorities or consumer protection.`;
   }
 
-  // Romance / investment / job
   if(/romance|dating|investment.*(return|guaranteed)|double.?your|work.?from.?home.*(fee|pay)|job.*(offer|placement).*fee/.test(t)){
     return `**Suspicious / High risk of scam**
 
@@ -1260,7 +1254,6 @@ Protect yourself:
 If money already left, document everything and report to the platform and local cybercrime / consumer agencies.`;
   }
 
-  // Generic link / URL analysis request
   const urlMatch=text.match(/https?:\/\/[^\s<>"']+/i) || text.match(/(?:^|\s)([a-z0-9][-a-z0-9.]*\.[a-z]{2,}(?:\/[^\s]*)?)/i);
   if(urlMatch){
     const raw=urlMatch[0].trim();
@@ -1288,7 +1281,6 @@ Advice:
     }
   }
 
-  // Fallback general advice
   return `I can help assess scam risk from messages, links, or what happened.
 
 Paste any of these and I'll give a clear verdict:
@@ -1311,17 +1303,74 @@ Rules:
 - Keep answers short and skimmable (short paragraphs or "- " bullets).
 - If ambiguous, say so.`;
 
+function extractPuterText(result){
+  if(result == null) return "";
+  if(typeof result === "string") return result.trim();
+  if(typeof result !== "object") return String(result).trim();
+
+  if(typeof result.text === "string") return result.text.trim();
+  if(typeof result.content === "string") return result.content.trim();
+
+  if(typeof result.message === "string") return result.message.trim();
+  if(result.message && typeof result.message === "object"){
+    if(typeof result.message.content === "string") return result.message.content.trim();
+    if(typeof result.message.text === "string") return result.message.text.trim();
+  }
+
+  if(Array.isArray(result.choices) && result.choices[0]){
+    const c = result.choices[0];
+    if(c.message && typeof c.message.content === "string") return c.message.content.trim();
+    if(typeof c.text === "string") return c.text.trim();
+  }
+
+  if(Array.isArray(result.content)){
+    return result.content.map(p => {
+      if(typeof p === "string") return p;
+      if(p && typeof p.text === "string") return p.text;
+      if(p && typeof p.content === "string") return p.content;
+      return "";
+    }).join("").trim();
+  }
+
+  return "";
+}
+
 async function callPuterAI(userText){
   if(typeof puter === "undefined" || !puter.ai || !puter.ai.chat) throw new Error("puter unavailable");
-  const prompt = AI_SYSTEM + "\n\nUser message:\n" + userText;
-  const result = await puter.ai.chat(prompt, { model: "gpt-4.1-nano" });
-  if(typeof result === "string") return result.trim();
-  if(result && typeof result === "object"){
-    if(result.message) return String(result.message).trim();
-    if(result.text) return String(result.text).trim();
-    if(result.content) return String(result.content).trim();
+
+  const messages = [
+    { role: "system", content: AI_SYSTEM },
+    { role: "user", content: userText }
+  ];
+
+  let result;
+  try{
+    result = await puter.ai.chat(messages, false, { model: "gpt-5.4-nano" });
+  }catch(e1){
+    try{
+      result = await puter.ai.chat(AI_SYSTEM + "\n\nUser: " + userText, { model: "gpt-5.4-nano" });
+    }catch(e2){
+      result = await puter.ai.chat(AI_SYSTEM + "\n\nUser: " + userText);
+    }
   }
-  return String(result || "").trim() || "No response generated.";
+
+  if(result && typeof result[Symbol.asyncIterator] === "function"){
+    let text = "";
+    for await (const part of result){
+      if(part && typeof part.text === "string") text += part.text;
+      else if(typeof part === "string") text += part;
+      else {
+        const bit = extractPuterText(part);
+        if(bit) text += bit;
+      }
+    }
+    if(text.trim()) return text.trim();
+    throw new Error("empty stream");
+  }
+
+  const text = extractPuterText(result);
+  if(text && text !== "[object Object]") return text;
+  throw new Error("empty or unreadable puter response");
 }
 
 async function sendAiMessage(overrideText){
@@ -1337,12 +1386,13 @@ async function sendAiMessage(overrideText){
   try{
     reply = await callPuterAI(text);
   }catch(e){
-    // Free API unavailable — use built-in offline analyzer
     await sleep(300);
     reply = localAnalyze(text);
   }
   hideTyping();
-  if(!reply) reply = localAnalyze(text);
+  if(!reply || reply === "[object Object]" || reply.includes("[object Object]")){
+    reply = localAnalyze(text);
+  }
   addMsg("ai",reply);
   aiHistory.push({role:"assistant",content:reply});
   aiSendBtn.disabled=false;
