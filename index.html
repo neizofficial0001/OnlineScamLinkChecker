@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://js.puter.com/v2/"></script>
+
 <style>
   :root{
     --black:#050506;
@@ -443,7 +443,7 @@
         <div class="ai-head">
           <span class="pip"></span>
           <span class="name">Security Analyst</span>
-          <span class="sub">puter · free</span>
+          <span class="sub">local · offline</span>
         </div>
         <div class="ai-msgs" id="aiMsgs">
           <div class="msg ai"><span class="tag">Analyst</span>I read scam messages, sketchy links, and weird texts and tell you straight what's going on. Paste something in, or tap a prompt below.</div>
@@ -684,7 +684,7 @@ document.getElementById("exportHistoryBtn").addEventListener("click",()=>{
 function normalizeUrl(raw){
   let s=(raw||"").trim();
   if(!s) return null;
-  if(!/^https?:\/\
+  if(!/^https?:\/\//i.test(s)) s="https://"+s;
   try{ return new URL(s); }catch{ return null; }
 }
 function isIpAddress(host){ return /^\d{1,3}(\.\d{1,3}){3}$/.test(host); }
@@ -1293,86 +1293,6 @@ Common patterns I flag quickly: package delivery texts, bank "verify your accoun
 **Never share passwords, 2FA codes, or seed phrases** with anyone — including this tool.`;
 }
 
-const AI_SYSTEM = `You are the Security Analyst inside ScamGuard. Assess scam/phishing risk from messages, links, or descriptions.
-
-Rules:
-- Start with a clear verdict: Likely Scam, Suspicious, or Likely Legitimate.
-- List specific red flags in plain language.
-- Give concrete next steps (what to do / not do).
-- Never ask for passwords, 2FA codes, or seed phrases. Tell the user never to share those.
-- Keep answers short and skimmable (short paragraphs or "- " bullets).
-- If ambiguous, say so.`;
-
-function extractPuterText(result){
-  if(result == null) return "";
-  if(typeof result === "string") return result.trim();
-  if(typeof result !== "object") return String(result).trim();
-
-  if(typeof result.text === "string") return result.text.trim();
-  if(typeof result.content === "string") return result.content.trim();
-
-  if(typeof result.message === "string") return result.message.trim();
-  if(result.message && typeof result.message === "object"){
-    if(typeof result.message.content === "string") return result.message.content.trim();
-    if(typeof result.message.text === "string") return result.message.text.trim();
-  }
-
-  if(Array.isArray(result.choices) && result.choices[0]){
-    const c = result.choices[0];
-    if(c.message && typeof c.message.content === "string") return c.message.content.trim();
-    if(typeof c.text === "string") return c.text.trim();
-  }
-
-  if(Array.isArray(result.content)){
-    return result.content.map(p => {
-      if(typeof p === "string") return p;
-      if(p && typeof p.text === "string") return p.text;
-      if(p && typeof p.content === "string") return p.content;
-      return "";
-    }).join("").trim();
-  }
-
-  return "";
-}
-
-async function callPuterAI(userText){
-  if(typeof puter === "undefined" || !puter.ai || !puter.ai.chat) throw new Error("puter unavailable");
-
-  const messages = [
-    { role: "system", content: AI_SYSTEM },
-    { role: "user", content: userText }
-  ];
-
-  let result;
-  try{
-    result = await puter.ai.chat(messages, false, { model: "gpt-5.4-nano" });
-  }catch(e1){
-    try{
-      result = await puter.ai.chat(AI_SYSTEM + "\n\nUser: " + userText, { model: "gpt-5.4-nano" });
-    }catch(e2){
-      result = await puter.ai.chat(AI_SYSTEM + "\n\nUser: " + userText);
-    }
-  }
-
-  if(result && typeof result[Symbol.asyncIterator] === "function"){
-    let text = "";
-    for await (const part of result){
-      if(part && typeof part.text === "string") text += part.text;
-      else if(typeof part === "string") text += part;
-      else {
-        const bit = extractPuterText(part);
-        if(bit) text += bit;
-      }
-    }
-    if(text.trim()) return text.trim();
-    throw new Error("empty stream");
-  }
-
-  const text = extractPuterText(result);
-  if(text && text !== "[object Object]") return text;
-  throw new Error("empty or unreadable puter response");
-}
-
 async function sendAiMessage(overrideText){
   const text=(overrideText!==undefined?overrideText:aiInput.value).trim();
   if(!text) return;
@@ -1381,18 +1301,9 @@ async function sendAiMessage(overrideText){
   if(overrideText===undefined) aiInput.value="";
   aiSendBtn.disabled=true;
   showTyping();
-
-  let reply = "";
-  try{
-    reply = await callPuterAI(text);
-  }catch(e){
-    await sleep(300);
-    reply = localAnalyze(text);
-  }
+  await sleep(400 + Math.random()*300);
   hideTyping();
-  if(!reply || reply === "[object Object]" || reply.includes("[object Object]")){
-    reply = localAnalyze(text);
-  }
+  const reply=localAnalyze(text);
   addMsg("ai",reply);
   aiHistory.push({role:"assistant",content:reply});
   aiSendBtn.disabled=false;
