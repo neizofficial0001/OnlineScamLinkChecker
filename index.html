@@ -54,12 +54,17 @@
     background-repeat:no-repeat;
     background-attachment:fixed;
   }
-  body.has-bg-image::before{opacity:.18}
+  body.has-bg-image::before{opacity:var(--grid-opacity,.12)}
   body::before{
     content:'';position:fixed;inset:0;
     background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-    background-size:46px 46px;opacity:.28;
+    background-size:46px 46px;opacity:var(--grid-opacity,.28);
     mask-image:radial-gradient(ellipse 70% 60% at 65% 0%,black,transparent);
+    pointer-events:none;z-index:0;
+  }
+  body.has-bg-image::after{
+    content:'';position:fixed;inset:0;
+    background:rgba(5,5,6,var(--bg-dim,.55));
     pointer-events:none;z-index:0;
   }
   .glow{position:fixed;top:-14%;left:66%;width:900px;height:560px;transform:translateX(-50%);
@@ -104,6 +109,25 @@
   .status-line{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
   .status-dot{width:6px;height:6px;border-radius:50%;background:var(--safe);box-shadow:0 0 8px var(--safe);animation:blink 2s ease-in-out infinite}
   .lede{color:var(--muted);font-size:.92rem;max-width:520px;margin:6px 0 26px}
+  .download-bar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);
+    padding:14px 16px;margin-bottom:22px;
+  }
+  .download-bar .dl-label{font-size:.78rem;color:var(--muted);font-weight:600;margin-right:4px}
+  .dl-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    background:linear-gradient(145deg,var(--accent),var(--accent-deep));
+    color:#fff;border:none;border-radius:var(--r-sm);
+    padding:10px 16px;font-size:.82rem;font-weight:700;text-decoration:none;
+    box-shadow:0 4px 14px var(--accent-glow);transition:.15s;
+  }
+  .dl-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px var(--accent-glow)}
+  .dl-btn.secondary{
+    background:transparent;border:1px solid var(--line-light);color:var(--text);
+    box-shadow:none;
+  }
+  .dl-btn.secondary:hover{border-color:var(--accent);color:#fff}
   .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
   .stat-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px}
   .stat-box .n{font-family:var(--font-mono);font-size:1.3rem;font-weight:700}
@@ -231,1187 +255,376 @@
   .theme-swatch .tname{font-size:.68rem;color:var(--muted);font-weight:600}
   .setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)}
   .setting-row:last-child{border-bottom:none}
-  .setting-row .st-label{font-size:.86rem;font-weight:600}
-  .setting-row .st-sub{font-size:.75rem;color:var(--muted);margin-top:2px}
-  .switch{position:relative;width:42px;height:24px;flex-shrink:0}
-  .switch input{opacity:0;width:0;height:0}
-  .switch-track{position:absolute;inset:0;background:var(--line-light);border-radius:20px;cursor:pointer;transition:.2s}
-  .switch-track::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:var(--text);border-radius:50%;transition:.2s}
-  .switch input:checked + .switch-track{background:var(--accent)}
-  .switch input:checked + .switch-track::before{transform:translateX(18px)}
-  .slider-row{padding:12px 0}
-  input[type="range"]{width:100%;accent-color:var(--accent);background:transparent;height:20px}
-  .toast-stack{position:fixed;bottom:22px;right:22px;z-index:50;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-  .toast{background:var(--panel);border:1px solid var(--line-light);border-left:3px solid var(--accent);border-radius:var(--r-sm);
-    padding:11px 16px;font-size:.83rem;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:280px;
-    animation:toast-in .25s ease;}
-  .toast.safe{border-left-color:var(--safe)}
-  @keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .toast.fade-out{animation:toast-out .25s ease forwards}
-  @keyframes toast-out{to{opacity:0;transform:translateY(8px)}}
-  footer{text-align:center;margin-top:36px;font-size:.72rem;color:var(--muted-dim)}
-  footer a{color:var(--accent);text-decoration:none}
-  footer a:hover{text-decoration:underline}
-  @media (max-width:860px){
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel);border:1px solid var(--line-light);color:var(--text);padding:12px 20px;border-radius:10px;font-size:.85rem;opacity:0;pointer-events:none;transition:.25s;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.safe{border-color:rgba(49,214,124,.4)}
+  @media (max-width:780px){
     .shell{flex-direction:column}
-    .rail{width:100%;height:auto;position:sticky;top:0;flex-direction:row;padding:12px 14px;gap:14px;z-index:5;border-right:none;border-bottom:1px solid var(--line)}
-    .rail-mark{width:34px;height:34px}
-    .rail-mark svg{width:17px;height:17px}
-    .rail-nav{flex-direction:row;flex:1;justify-content:space-between;overflow-x:auto}
-    .rail-btn{width:auto;height:auto;padding:6px 8px;flex-direction:row;gap:6px}
-    .rail-btn span{display:none}
-    .rail-stats{display:none}
-    .rail-social{flex-direction:row;gap:2px}
-    .rail-social a{width:40px;height:40px}
-    .rail-social a svg{width:22px;height:22px}
-    .main{padding:22px 16px 90px;max-width:100%}
-    .stat-strip{grid-template-columns:repeat(2,1fr)}
-    .meta-grid,.tools-grid,.theme-grid{grid-template-columns:1fr 1fr}
-    .input-wrap{flex-direction:column}
-    .btn{width:100%}
-    .topline h1{font-size:1.4rem}
-    .ai-shell{height:70vh}
-    .toast-stack{left:16px;right:16px;bottom:16px;align-items:stretch}
-    .toast{max-width:none}
+    .rail{width:100%;height:auto;flex-direction:row;padding:12px 14px;border-right:none;border-bottom:1px solid var(--line);position:relative;gap:10px;overflow-x:auto}
+    .rail-nav{flex-direction:row;flex:1}
+    .rail-stats,.rail-social{display:none}
+    .main{padding:24px 18px 80px}
+    .stat-strip{grid-template-columns:1fr 1fr}
+    .tools-grid{grid-template-columns:1fr}
+    .meta-grid{grid-template-columns:1fr}
   }
-  body.light{
-    --black:#f3f1ec; --black2:#ffffff; --black3:#ebe8e1;
-    --panel:#ffffff; --panel-hover:#f6f4ef;
-    --line:#e3ddd2; --line-light:#d4ccbc;
-    --text:#171512; --muted:#6b6660; --muted-dim:#a39c8f;
-  }
-  body.compact{ --pad-scale:.7 }
-  body.compact .card{margin-bottom:10px}
 </style>
 </head>
 <body>
 <div class="glow"></div>
-<div class="toast-stack" id="toastStack"></div>
 <div class="shell">
-  <nav class="rail" id="rail">
+  <aside class="rail">
     <div class="rail-mark">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 5.5V11c0 5.2 3.4 9.9 8 11 4.6-1.1 8-5.8 8-11V5.5L12 2z" fill="#fff"/><path d="M9.5 12l1.8 1.8L14.8 10" stroke="#9c0f1c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     </div>
-    <div class="rail-nav" id="railNav">
-      <button class="rail-btn active" data-tab="check" title="Scan">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <span>Scan</span>
-      </button>
-      <button class="rail-btn" data-tab="extract" title="Extract">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg>
-        <span>Extract</span>
-      </button>
-      <button class="rail-btn" data-tab="image" title="Image Scan">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span>Image</span>
-      </button>
-      <button class="rail-btn" data-tab="ai" title="AI Analyst">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        <span>Analyst</span>
-      </button>
-      <button class="rail-btn" data-tab="tools" title="Tools">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 11-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 015.4-5.4z"/></svg>
-        <span>Tools</span>
-      </button>
-      <button class="rail-btn" data-tab="history" title="History">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        <span>Log</span>
-      </button>
-      <button class="rail-btn" data-tab="settings" title="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        <span>Settings</span>
-      </button>
-    </div>
-    <div class="rail-social">
-      <a href="https://github.com/zscript084-lgtm" target="_blank" rel="noopener noreferrer" title="GitHub">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-      </a>
-      <a href="https://www.youtube.com/@scamguardofficial" target="_blank" rel="noopener noreferrer" title="YouTube">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-      </a>
-    </div>
+    <nav class="rail-nav">
+      <button class="rail-btn active" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></button>
+      <button class="rail-btn" data-tab="scan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Scan</span></button>
+      <button class="rail-btn" data-tab="extract"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Extract</span></button>
+      <button class="rail-btn" data-tab="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Analyst</span></button>
+      <button class="rail-btn" data-tab="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/></svg><span>Log</span></button>
+      <button class="rail-btn" data-tab="tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span>Tools</span></button>
+      <button class="rail-btn" data-tab="image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span>OCR</span></button>
+      <button class="rail-btn" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>Settings</span></button>
+    </nav>
     <div class="rail-stats">
-      <span class="rail-pulse"></span>
-      <span class="n" id="railScanCount">0</span>
-      <span class="l">Scans</span>
+      <div class="rail-pulse"></div>
+      <div class="n" id="railCount">0</div>
+      <div class="l">scans</div>
     </div>
-  </nav>
+  </aside>
+
   <main class="main">
-    <div class="panel active" id="panel-check">
-      <div class="topline">
-        <h1>Scan Console</h1>
-        <span class="status-line"><span class="status-dot"></span>Analyst online · 24/7</span>
+    <div class="topline">
+      <h1>ScamGuard</h1>
+      <div class="status-line"><span class="status-dot"></span> Live threat console</div>
+    </div>
+    <p class="lede">Paste any link. Blacklist cross-reference and structural heuristics run in one pass. Built-in AI analyst for messages and screenshots.</p>
+
+    <div class="stat-strip">
+      <div class="stat-box"><div class="n" id="statTotal">0</div><div class="l">Total scans</div></div>
+      <div class="stat-box safe"><div class="n" id="statSafe">0</div><div class="l">Safe</div></div>
+      <div class="stat-box suspicious"><div class="n" id="statSuspicious">0</div><div class="l">Suspicious</div></div>
+      <div class="stat-box dangerous"><div class="n" id="statDangerous">0</div><div class="l">Dangerous</div></div>
+    </div>
+
+    <section class="panel active" id="panel-home">
+      <div class="card">
+        <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px">Why use ScamGuard</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+          <li style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--black2);border-radius:var(--r-sm);border-left:3px solid var(--accent)"><span style="color:var(--accent);font-weight:700">•</span><span><strong>Website</strong> — Instant link scans, blacklist checks, AI analyst for messages, OCR on screenshots, and tools. Works in any browser, no install required.</span></li>
+          <li style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--black2);border-radius:var(--r-sm);border-left:3px solid var(--safe)"><span style="color:var(--safe);font-weight:700">•</span><span><strong>Android app</strong> — Scan suspicious links and messages on the go. Same heuristics and offline-friendly analyst, always in your pocket when a text or chat arrives.</span></li>
+          <li style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--black2);border-radius:var(--r-sm);border-left:3px solid var(--warn)"><span style="color:var(--warn);font-weight:700">•</span><span>Catch phishing keywords, typosquats, risky TLDs, punycode lookalikes, and known scam domains before you click or share credentials.</span></li>
+        </ul>
+        <div class="download-bar" style="margin-bottom:0">
+          <span class="dl-label">Android APK:</span>
+          <a class="dl-btn" href="https://www.mediafire.com/file/4pls5zkln99krjp/scamguard.apk/file" target="_blank" rel="noopener">Download (MediaFire)</a>
+          <a class="dl-btn secondary" href="https://limewire.com/d/ivPkL#OgKFIbwQ13" target="_blank" rel="noopener">Download (LimeWire)</a>
+        </div>
       </div>
-      <p class="lede">Paste any link. Blacklist cross-reference, structural heuristics, and brand-similarity scoring run in one pass.</p>
-      <div class="stat-strip">
-        <div class="stat-box"><div class="n" id="statTotal">0</div><div class="l">Total Scanned</div></div>
-        <div class="stat-box safe"><div class="n" id="statSafe">0</div><div class="l">Clean</div></div>
-        <div class="stat-box suspicious"><div class="n" id="statSuspicious">0</div><div class="l">Suspicious</div></div>
-        <div class="stat-box dangerous"><div class="n" id="statDangerous">0</div><div class="l">Dangerous</div></div>
-      </div>
+    </section>
+
+    <section class="panel" id="panel-scan">
       <div class="card hud">
-        <span class="hud-corner tl"></span><span class="hud-corner tr"></span><span class="hud-corner bl"></span><span class="hud-corner br"></span>
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
         <label for="urlInput">Target URL</label>
         <div class="input-wrap">
-          <input type="url" id="urlInput" placeholder="https://suspicious-site.com/login" autocomplete="off" spellcheck="false" />
-          <button class="btn" id="checkBtn">Scan</button>
+          <input type="url" id="urlInput" placeholder="https://suspicious-site.com/login" autocomplete="off" />
+          <button class="btn" id="scanBtn">Scan</button>
         </div>
-        <div class="hint">Press <kbd>/</kbd> to focus · <kbd>Enter</kbd> to scan</div>
-        <div class="seq" id="seq">
-          <div class="seq-step" data-step="0"><span class="ring"></span>Resolving target domain</div>
-          <div class="seq-step" data-step="1"><span class="ring"></span>Cross-referencing threat blacklist</div>
-          <div class="seq-step" data-step="2"><span class="ring"></span>Analyzing URL structure</div>
-          <div class="seq-step" data-step="3"><span class="ring"></span>Scoring brand similarity</div>
-          <div class="seq-step" data-step="4"><span class="ring"></span>Compiling verdict</div>
+        <p class="hint">Enter a full URL or domain. Press <kbd>Enter</kbd> to run.</p>
+        <div class="seq" id="scanSeq">
+          <div class="seq-step"><div class="ring"></div>Normalizing target</div>
+          <div class="seq-step"><div class="ring"></div>Running heuristics</div>
+          <div class="seq-step"><div class="ring"></div>Blacklist lookup</div>
+          <div class="seq-step"><div class="ring"></div>Scoring verdict</div>
         </div>
-      </div>
-      <div class="card result hud" id="result">
-        <span class="hud-corner tl"></span><span class="hud-corner tr"></span><span class="hud-corner bl"></span><span class="hud-corner br"></span>
-        <div class="verdict" id="verdict">
-          <div class="score-ring" id="scoreRing"><span id="scoreNum">0</span></div>
-          <div>
-            <div id="verdictText">—</div>
-            <div style="font-size:.79rem;font-weight:500;opacity:.7;margin-top:2px" id="verdictSub"></div>
+        <div class="result" id="scanResult">
+          <div class="verdict" id="verdictBox">
+            <div class="score-ring" id="scoreRing"><span id="scoreNum">0</span></div>
+            <div>
+              <div id="verdictText">Looks Clean</div>
+              <div style="font-size:.82rem;font-weight:500;opacity:.8;margin-top:2px" id="verdictSub">No major red flags</div>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <div class="meta-item"><div class="lbl">Domain</div><div class="val" id="metaDomain">—</div></div>
+            <div class="meta-item"><div class="lbl">Blacklist</div><div class="val" id="metaBlacklist">—</div></div>
+          </div>
+          <div class="breakdown">
+            <h3>Signal breakdown</h3>
+            <div class="bd-row"><span class="bd-label">Domain</span><div class="bd-track"><div class="bd-fill" id="bdDomain"></div></div><span class="bd-val" id="bdDomainVal">0</span></div>
+            <div class="bd-row"><span class="bd-label">Structure</span><div class="bd-track"><div class="bd-fill" id="bdStructure"></div></div><span class="bd-val" id="bdStructureVal">0</span></div>
+            <div class="bd-row"><span class="bd-label">Content</span><div class="bd-track"><div class="bd-fill" id="bdContent"></div></div><span class="bd-val" id="bdContentVal">0</span></div>
+            <div class="bd-row"><span class="bd-label">Brand</span><div class="bd-track"><div class="bd-fill" id="bdBrand"></div></div><span class="bd-val" id="bdBrandVal">0</span></div>
+          </div>
+          <div class="flags-section">
+            <h3>Detected signals</h3>
+            <ul class="flags" id="flagsList"></ul>
           </div>
         </div>
-        <div class="breakdown">
-          <h3>Risk Breakdown</h3>
-          <div class="bd-row"><div class="bd-label">Domain Trust</div><div class="bd-track"><div class="bd-fill" id="bdDomain"></div></div><div class="bd-val" id="bdDomainVal">0</div></div>
-          <div class="bd-row"><div class="bd-label">URL Structure</div><div class="bd-track"><div class="bd-fill" id="bdStructure"></div></div><div class="bd-val" id="bdStructureVal">0</div></div>
-          <div class="bd-row"><div class="bd-label">Content Signals</div><div class="bd-track"><div class="bd-fill" id="bdContent"></div></div><div class="bd-val" id="bdContentVal">0</div></div>
-          <div class="bd-row"><div class="bd-label">Brand Similarity</div><div class="bd-track"><div class="bd-fill" id="bdBrand"></div></div><div class="bd-val" id="bdBrandVal">0</div></div>
-        </div>
-        <div class="meta-grid">
-          <div class="meta-item"><div class="lbl">Domain</div><div class="val" id="domainValue">—</div></div>
-          <div class="meta-item"><div class="lbl">Blacklist</div><div class="val" id="gacsValue">—</div></div>
-          <div class="meta-item"><div class="lbl">Protocol</div><div class="val" id="protoValue">—</div></div>
-          <div class="meta-item"><div class="lbl">Risk Score</div><div class="val" id="scoreValue">—</div></div>
-        </div>
-        <div class="flags-section" id="flagsSection" style="display:none;margin-bottom:4px">
-          <h3>Detected Signals</h3>
-          <ul class="flags" id="flagsList"></ul>
-        </div>
-        <div class="actions">
-          <button class="btn btn-ghost" id="copyBtn">Copy Result</button>
-          <button class="btn btn-ghost" id="askAiBtn">Ask AI Analyst</button>
-          <button class="btn btn-ghost" id="clearBtn">Clear</button>
-        </div>
       </div>
-    </div>
-    <div class="panel" id="panel-extract">
-      <div class="topline"><h1>Link Extractor</h1></div>
-      <p class="lede">Paste a full message or email. Every URL inside gets pulled out and queued for scanning.</p>
+    </section>
+
+    <section class="panel" id="panel-extract">
       <div class="card">
-        <label for="textInput">Message text</label>
-        <textarea id="textInput" placeholder="Paste any text containing links here…"></textarea>
-        <div style="margin-top:12px"><button class="btn" id="extractBtn">Extract & Scan Links</button></div>
+        <label for="extractInput">Paste any text containing links</label>
+        <textarea id="extractInput" placeholder="Paste SMS, email, or chat text here…"></textarea>
+        <div style="margin-top:12px"><button class="btn" id="extractBtn">Extract Links</button></div>
         <div class="extracted-links" id="extractedLinks"></div>
       </div>
-    </div>
-    <div class="panel" id="panel-image">
-      <div class="topline"><h1>Image Scanner</h1></div>
-      <p class="lede">Upload a screenshot of a text, email, caller ID, or phishing page. OCR runs entirely in your browser, then the text is analyzed for scam signals.</p>
-      <div class="card hud">
-        <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
-        <span class="hud-corner bl"></span><span class="hud-corner br"></span>
-        <label>Screenshot / Image</label>
-        <input type="file" id="imageInput" accept="image/*" style="display:none"/>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-          <button class="btn" id="imagePickBtn">Choose Image</button>
-          <button class="btn btn-ghost" id="imageClearBtn" style="display:none">Clear</button>
-        </div>
-        <div class="hint" id="imageHint">JPEG, PNG, WebP, GIF — processed locally</div>
-        <div id="imagePreviewWrap" style="display:none;margin:16px 0">
-          <img id="imagePreview" style="max-width:100%;max-height:220px;border-radius:8px;border:1px solid var(--line)"/>
-        </div>
-        <div class="seq" id="imageSeq">
-          <div class="seq-step" data-step="0"><span class="ring"></span>Loading image</div>
-          <div class="seq-step" data-step="1"><span class="ring"></span>Running OCR (Tesseract)</div>
-          <div class="seq-step" data-step="2"><span class="ring"></span>Extracting text</div>
-          <div class="seq-step" data-step="3"><span class="ring"></span>Analyzing for scam signals</div>
-        </div>
-        <div style="margin-top:14px">
-          <button class="btn" id="imageScanBtn" disabled>Scan Image</button>
-        </div>
-      </div>
-      <div class="card result hud" id="imageResult" style="display:none">
-        <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
-        <span class="hud-corner bl"></span><span class="hud-corner br"></span>
-        <div class="verdict" id="imageVerdict">
-          <div class="score-ring" id="imageScoreRing"><span id="imageScoreNum">0</span></div>
-          <div>
-            <div id="imageVerdictText">—</div>
-            <div style="font-size:.79rem;font-weight:500;opacity:.7;margin-top:2px" id="imageVerdictSub"></div>
-          </div>
-        </div>
-        <div style="margin-bottom:18px">
-          <h3 style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;font-family:var(--font-mono)">Extracted Text</h3>
-          <pre id="imageExtractedText" style="background:var(--black2);border:1px solid var(--line);border-radius:8px;padding:14px;font-family:var(--font-mono);font-size:.82rem;white-space:pre-wrap;max-height:180px;overflow:auto;color:var(--text)"></pre>
-        </div>
-        <div class="flags-section" id="imageFlagsSection" style="display:none;margin-bottom:16px">
-          <h3>Detected Signals</h3>
-          <ul class="flags" id="imageFlagsList"></ul>
-        </div>
-        <div class="actions">
-          <button class="btn btn-ghost" id="imageAskAiBtn">Ask AI Analyst</button>
-          <button class="btn btn-ghost" id="imageCopyTextBtn">Copy Extracted Text</button>
-        </div>
-      </div>
-    </div>
-    <div class="panel" id="panel-ai">
-      <div class="topline"><h1>AI Analyst</h1></div>
-      <p class="lede">Paste a message, link, or describe what happened — get a straight read on whether it's a scam.</p>
-      <div class="ai-shell hud">
-        <span class="hud-corner tl"></span><span class="hud-corner tr"></span><span class="hud-corner bl"></span><span class="hud-corner br"></span>
+    </section>
+
+    <section class="panel" id="panel-ai">
+      <div class="ai-shell">
         <div class="ai-head">
-          <span class="pip"></span>
-          <span class="name">Security Analyst</span>
-          <span class="sub">local · offline</span>
+          <div class="pip"></div>
+          <div class="name">AI Analyst</div>
+          <div class="sub">Rule-based · offline</div>
         </div>
         <div class="ai-msgs" id="aiMsgs">
-          <div class="msg ai"><span class="tag">Analyst</span>I read scam messages, sketchy links, and weird texts and tell you straight what's going on. Paste something in, or tap a prompt below.</div>
+          <div class="msg ai"><span class="tag">Analyst</span><p>I read scam messages, sketchy links, and weird texts and tell you straight what's going on. Paste something in.</p></div>
         </div>
-        <div class="ai-suggest" id="aiSuggest">
-          <span class="chip" data-prompt="Is this text message a scam? &quot;Your package could not be delivered. Confirm your address: bit.ly/pkg-4471&quot;">Package scam text</span>
-          <span class="chip" data-prompt="Someone messaged me claiming to be from my bank asking me to verify my account by phone. Is this a common scam pattern?">Bank impersonation</span>
-          <span class="chip" data-prompt="Explain the most common crypto/NFT airdrop scam patterns and how to spot them.">Crypto airdrop scams</span>
+        <div class="ai-suggest">
+          <button class="chip" data-prompt="I got a text saying my package couldn't be delivered and I need to confirm my address">Package text</button>
+          <button class="chip" data-prompt="Someone called claiming to be my bank and asked for an OTP">Bank call</button>
+          <button class="chip" data-prompt="Got an airdrop link asking me to connect wallet and claim tokens">Crypto airdrop</button>
         </div>
         <div class="ai-input">
-          <textarea id="aiInput" placeholder="Paste a message, link, or describe what happened…"></textarea>
-          <button class="btn" id="aiSendBtn" style="align-self:flex-end">Send</button>
+          <textarea id="aiInput" placeholder="Paste a message, link, or describe what happened…" rows="1"></textarea>
+          <button class="btn" id="aiSendBtn">Send</button>
         </div>
       </div>
-    </div>
-    <div class="panel" id="panel-tools">
-      <div class="topline"><h1>Toolkit</h1></div>
-      <p class="lede">Ten offline heuristic tools. Nothing here calls out to a server except the blacklist and AI features.</p>
-      <div class="tools-grid">
-        <div class="tool-card" data-tool="ip"><div class="icon">🌐</div><h4>IP Detector</h4><p>Check if a URL uses a raw IP address</p></div>
-        <div class="tool-card" data-tool="keywords"><div class="icon">🔑</div><h4>Keyword Scanner</h4><p>Find phishing trigger words in a URL</p></div>
-        <div class="tool-card" data-tool="tld"><div class="icon">🏷</div><h4>TLD Risk Check</h4><p>Flag high-abuse domain endings</p></div>
-        <div class="tool-card" data-tool="length"><div class="icon">📏</div><h4>Length Analyzer</h4><p>Detect suspiciously long domains</p></div>
-        <div class="tool-card" data-tool="typo"><div class="icon">🎭</div><h4>Typosquat Detector</h4><p>Compare a domain against major brands</p></div>
-        <div class="tool-card" data-tool="decode"><div class="icon">🧩</div><h4>Link Decoder</h4><p>Decode Base64 / URL-encoded links</p></div>
-        <div class="tool-card" data-tool="punycode"><div class="icon">🔤</div><h4>Punycode Revealer</h4><p>Unmask lookalike Unicode domains</p></div>
-        <div class="tool-card" data-tool="password"><div class="icon">🔒</div><h4>Password Strength</h4><p>Estimate crack-resistance offline</p></div>
-        <div class="tool-card" data-tool="sender"><div class="icon">✉️</div><h4>Sender Domain Check</h4><p>Verify an email sender's domain</p></div>
-        <div class="tool-card" data-tool="bulk"><div class="icon">📋</div><h4>Bulk Scanner</h4><p>Scan a whole list of links at once</p></div>
-      </div>
-      <div class="card" id="toolResult" style="display:none"><div id="toolOutput"></div></div>
-    </div>
-    <div class="panel" id="panel-history">
-      <div class="topline"><h1>Scan Log</h1></div>
-      <p class="lede">Everything scanned this session, most recent first.</p>
+    </section>
+
+    <section class="panel" id="panel-history">
       <div class="card">
-        <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px">
-          <button class="btn btn-ghost" id="exportHistoryBtn">Export JSON</button>
-          <button class="btn btn-ghost" id="clearHistoryBtn">Clear All</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h3 style="font-size:1rem;font-weight:700">Scan Log</h3>
+          <button class="btn-ghost" id="clearHistoryBtn">Clear All</button>
         </div>
         <div class="history-list" id="historyList"><div class="empty">No scans yet</div></div>
       </div>
-    </div>
-    <div class="panel" id="panel-settings">
-      <div class="topline"><h1>Settings</h1></div>
-      <p class="lede">Theme, background, density, and detection sensitivity — all local to this session.</p>
+    </section>
+
+    <section class="panel" id="panel-tools">
+      <div class="tools-grid" id="toolsGrid">
+        <div class="tool-card" data-tool="keywords"><div class="icon">🔑</div><h4>Keyword Scanner</h4><p>Detect phishing keywords in a URL</p></div>
+        <div class="tool-card" data-tool="tld"><div class="icon">🌐</div><h4>TLD Risk Check</h4><p>Flag high-abuse top-level domains</p></div>
+        <div class="tool-card" data-tool="length"><div class="icon">📏</div><h4>Length Analyzer</h4><p>Check domain and subdomain length</p></div>
+        <div class="tool-card" data-tool="typo"><div class="icon">🔤</div><h4>Typosquat Detector</h4><p>Find close brand lookalikes</p></div>
+        <div class="tool-card" data-tool="punycode"><div class="icon">🧬</div><h4>Punycode Revealer</h4><p>Detect IDN / xn-- domains</p></div>
+        <div class="tool-card" data-tool="ip"><div class="icon">📡</div><h4>IP Address Check</h4><p>Detect raw IP instead of domain</p></div>
+      </div>
+      <div class="card" id="toolOutput" style="display:none"></div>
+    </section>
+
+    <section class="panel" id="panel-image">
       <div class="card">
-        <label>Theme</label>
+        <label>Screenshot / Image OCR</label>
+        <p class="hint" style="margin-bottom:12px">Upload a screenshot of a suspicious message. Text is extracted locally with Tesseract.</p>
+        <input type="file" id="imageInput" accept="image/*" style="display:none" />
+        <div class="actions">
+          <button class="btn" id="imagePickBtn">Choose Image</button>
+          <button class="btn-ghost" id="imageClearBtn" style="display:none">Clear</button>
+          <button class="btn" id="imageScanBtn" disabled>Scan Image</button>
+        </div>
+        <p class="hint" id="imageHint">JPEG, PNG, WebP, GIF — processed locally</p>
+        <div id="imagePreviewWrap" style="display:none;margin-top:14px">
+          <img id="imagePreview" style="max-width:100%;border-radius:10px;border:1px solid var(--line)" />
+        </div>
+        <div class="seq" id="imageSeq">
+          <div class="seq-step"><div class="ring"></div>Loading image</div>
+          <div class="seq-step"><div class="ring"></div>Running OCR</div>
+          <div class="seq-step"><div class="ring"></div>Analyzing text</div>
+        </div>
+        <div id="imageResult" style="display:none;margin-top:18px">
+          <div class="verdict" id="imageVerdict">
+            <div class="score-ring" id="imageScoreRing"><span id="imageScoreNum">0</span></div>
+            <div>
+              <div id="imageVerdictText">—</div>
+              <div style="font-size:.82rem;font-weight:500;opacity:.8;margin-top:2px" id="imageVerdictSub"></div>
+            </div>
+          </div>
+          <div class="meta-item" style="margin-bottom:14px"><div class="lbl">Extracted text</div><div class="val" id="imageExtractedText" style="white-space:pre-wrap;font-size:.82rem"></div></div>
+          <div class="flags-section" id="imageFlagsSection" style="display:none">
+            <h3>Signals from text</h3>
+            <ul class="flags" id="imageFlagsList"></ul>
+          </div>
+          <div class="actions" style="margin-top:12px">
+            <button class="btn-ghost" id="imageAskAiBtn">Ask AI Analyst</button>
+            <button class="btn-ghost" id="imageCopyTextBtn">Copy Text</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-settings">
+      <div class="card">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:16px">Appearance</h3>
         <div class="theme-grid" id="themeGrid"></div>
       </div>
       <div class="card">
-        <label style="margin-bottom:0">Background</label>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px">Background</h3>
+        <p class="hint" style="margin-bottom:12px">Upload a JPEG, PNG, GIF, or WebP. GIFs stay animated.</p>
+        <input type="file" id="bgInput" accept="image/jpeg,image/png,image/gif,image/webp,image/*" style="display:none" />
+        <div class="actions">
+          <button class="btn" id="bgPickBtn">Choose image</button>
+          <button class="btn-ghost" id="bgClearBtn">Clear</button>
+        </div>
+        <p class="hint" id="bgHint" style="margin-top:10px">No custom background</p>
+        <div class="setting-row" style="margin-top:8px">
+          <span>Background dim <span id="bgDimVal" style="font-family:var(--font-mono);color:var(--muted)">55%</span></span>
+          <input type="range" id="bgDim" min="0" max="90" value="55" style="width:140px" />
+        </div>
         <div class="setting-row">
-          <div><div class="st-label">Custom image</div><div class="st-sub">JPEG, PNG, WebP, or GIF — applied as full-page cover</div></div>
+          <span>Grid opacity <span id="gridOpVal" style="font-family:var(--font-mono);color:var(--muted)">28%</span></span>
+          <input type="range" id="gridOpacity" min="0" max="60" value="28" style="width:140px" />
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-          <input type="file" id="bgImageInput" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" style="display:none"/>
-          <button class="btn btn-ghost" id="bgImagePickBtn">Choose Image</button>
-          <button class="btn btn-ghost" id="bgImageClearBtn">Clear</button>
-        </div>
-        <div class="hint" id="bgImageHint" style="margin-top:10px">No custom background set</div>
       </div>
       <div class="card">
-        <label style="margin-bottom:0">Display</label>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:8px">Display</h3>
         <div class="setting-row">
-          <div><div class="st-label">Compact density</div><div class="st-sub">Tighter padding, more on screen</div></div>
-          <label class="switch"><input type="checkbox" id="compactToggle"><span class="switch-track"></span></label>
+          <span>Compact spacing</span>
+          <input type="checkbox" id="compactMode" />
+        </div>
+        <div class="setting-row">
+          <span>Hide scan counter on rail</span>
+          <input type="checkbox" id="hideRailStats" />
+        </div>
+        <div class="setting-row">
+          <span>Reduce motion</span>
+          <input type="checkbox" id="reduceMotion" />
         </div>
       </div>
       <div class="card">
-        <label style="margin-bottom:0">Detection Sensitivity</label>
-        <div class="slider-row">
-          <div class="st-label" style="font-size:.8rem">Suspicious threshold: <span id="threshSuspiciousVal">25</span></div>
-          <input type="range" id="threshSuspicious" min="5" max="90" value="25">
-        </div>
-        <div class="slider-row">
-          <div class="st-label" style="font-size:.8rem">Dangerous threshold: <span id="threshDangerousVal">55</span></div>
-          <input type="range" id="threshDangerous" min="10" max="100" value="55">
-        </div>
-        <div class="hint" style="margin-top:0">Lower thresholds flag more links as risky. Existing results won't re-score automatically.</div>
-      </div>
-      <div class="card">
-        <label style="margin-bottom:0">Session Data</label>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:8px">Risk thresholds</h3>
         <div class="setting-row">
-          <div><div class="st-label">Reset stats & scan log</div><div class="st-sub">Clears everything scanned this session</div></div>
-          <button class="btn btn-ghost" id="resetAllBtn">Reset</button>
+          <span>Suspicious threshold <span id="threshSusVal" style="font-family:var(--font-mono);color:var(--muted)">25</span></span>
+          <input type="range" id="threshSuspicious" min="10" max="50" value="25" style="width:140px" />
+        </div>
+        <div class="setting-row">
+          <span>Dangerous threshold <span id="threshDanVal" style="font-family:var(--font-mono);color:var(--muted)">55</span></span>
+          <input type="range" id="threshDangerous" min="40" max="90" value="55" style="width:140px" />
+        </div>
+        <div class="setting-row">
+          <span>Reset session data</span>
+          <button class="btn-ghost" id="resetSessionBtn">Reset</button>
         </div>
       </div>
-    </div>
-    <footer>Built-in AI + heuristic scanning · Not 100% accurate · Never share passwords or seed phrases with anyone, including this tool · <a href="https://github.com/zscript084-lgtm" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://www.youtube.com/@scamguardofficial" target="_blank" rel="noopener noreferrer">YouTube</a></footer>
+    </section>
   </main>
 </div>
+<div class="toast" id="toast"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
 const SUSPICIOUS_KEYWORDS=["login","signin","sign-in","verify","secure","account","update","confirm","password","wallet","seed","phrase","recovery","unlock","free","gift","prize","claim","reward","bonus","airdrop","support","helpdesk","security","alert","urgent","suspended","bank","paypal","appleid","microsoft","google","facebook","metamask","binance","coinbase","crypto","nft","drop","claim-now","verify-now"];
 const SUSPICIOUS_TLDS=[".tk",".ml",".ga",".cf",".gq",".xyz",".top",".club",".work",".click",".link",".online",".site",".info",".icu",".buzz",".rest",".monster",".sbs"];
 const BRAND_DOMAINS=["paypal.com","apple.com","google.com","microsoft.com","amazon.com","facebook.com","instagram.com","netflix.com","bankofamerica.com","chase.com","wellsfargo.com","coinbase.com","binance.com","metamask.io","dropbox.com","linkedin.com","twitter.com","x.com","irs.gov","usps.com","fedex.com","ups.com","docusign.com"];
-let sessionHistory=[];
-let stats={total:0,safe:0,suspicious:0,dangerous:0};
-let THRESH_SUSPICIOUS=25, THRESH_DANGEROUS=55;
-function toast(msg,type="info"){
-  const stack=document.getElementById("toastStack");
-  const el=document.createElement("div");
-  el.className="toast"+(type==="safe"?" safe":"");
-  el.textContent=msg;
-  stack.appendChild(el);
-  setTimeout(()=>{ el.classList.add("fade-out"); setTimeout(()=>el.remove(),260); },2600);
-}
-const THEMES={
-  crimson:{label:"Crimson",dot:"#ff2d3a",vars:{"--black":"#050506","--black2":"#0a0b0d","--black3":"#0e0f12","--panel":"#111216","--panel-hover":"#16171c","--line":"#221417","--line-light":"#3a2226","--accent":"#ff2d3a","--accent-deep":"#9c0f1c","--accent-glow":"rgba(255,45,58,.26)","--accent-glow-soft":"rgba(255,45,58,.12)","--text":"#f4f3f0","--muted":"#8d8d93","--muted-dim":"#54545a"}},
-  cyber:{label:"Cyber Blue",dot:"#2d8fff",vars:{"--black":"#05070a","--black2":"#0a0d12","--black3":"#0e1218","--panel":"#111620","--panel-hover":"#161c28","--line":"#141e2e","--line-light":"#22344a","--accent":"#2d8fff","--accent-deep":"#0f4c9c","--accent-glow":"rgba(45,143,255,.26)","--accent-glow-soft":"rgba(45,143,255,.12)","--text":"#f0f4f8","--muted":"#8a929d","--muted-dim":"#525a63"}},
-  toxic:{label:"Toxic Green",dot:"#39ff6a",vars:{"--black":"#050805","--black2":"#0a0f0a","--black3":"#0e140e","--panel":"#111a12","--panel-hover":"#162018","--line":"#122417","--line-light":"#1f3d27","--accent":"#39ff6a","--accent-deep":"#0f8c37","--accent-glow":"rgba(57,255,106,.24)","--accent-glow-soft":"rgba(57,255,106,.1)","--text":"#eef8ef","--muted":"#87938a","--muted-dim":"#4f584f"}},
-  violet:{label:"Violet Pulse",dot:"#a855f7",vars:{"--black":"#07050a","--black2":"#0c0a12","--black3":"#100d18","--panel":"#151220","--panel-hover":"#1b1729","--line":"#1e1530","--line-light":"#33244d","--accent":"#a855f7","--accent-deep":"#6b21a8","--accent-glow":"rgba(168,85,247,.26)","--accent-glow-soft":"rgba(168,85,247,.12)","--text":"#f4f1f9","--muted":"#948da3","--muted-dim":"#585265"}},
-  arctic:{label:"Arctic",dot:"#dc2626",light:true,vars:{"--accent":"#dc2626","--accent-deep":"#991b1b","--accent-glow":"rgba(220,38,38,.18)","--accent-glow-soft":"rgba(220,38,38,.08)"}}
-};
-let currentTheme="crimson";
-function applyTheme(name){
-  const theme=THEMES[name];
-  if(!theme) return;
-  currentTheme=name;
-  const root=document.documentElement.style;
-  const all=new Set([...Object.keys(THEMES.crimson.vars)]);
-  all.forEach(k=>root.removeProperty(k));
-  Object.entries(theme.vars).forEach(([k,v])=>root.setProperty(k,v));
-  document.body.classList.toggle("light",!!theme.light);
-  document.querySelectorAll(".theme-swatch").forEach(s=>s.classList.toggle("active",s.dataset.theme===name));
-}
-function buildThemeGrid(){
-  const grid=document.getElementById("themeGrid");
-  grid.innerHTML=Object.entries(THEMES).map(([key,t])=>`
-    <div class="theme-swatch${key===currentTheme?' active':''}" data-theme="${key}">
-      <div class="theme-dot" style="background:${t.dot}"></div>
-      <div class="tname">${t.label}</div>
-    </div>`).join("");
-  grid.querySelectorAll(".theme-swatch").forEach(el=>{
-    el.addEventListener("click",()=>{ applyTheme(el.dataset.theme); toast(THEMES[el.dataset.theme].label+" theme applied","safe"); });
-  });
-}
-document.querySelectorAll(".rail-btn").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    document.querySelectorAll(".rail-btn").forEach(b=>b.classList.remove("active"));
-    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById("panel-"+btn.dataset.tab).classList.add("active");
-    if(btn.dataset.tab==="history") renderHistory();
-  });
-});
-function goToTab(name){ document.querySelector('[data-tab="'+name+'"]').click(); }
-document.addEventListener("keydown",e=>{
-  if(e.key==="/" && document.activeElement.tagName!=="INPUT" && document.activeElement.tagName!=="TEXTAREA"){
-    e.preventDefault();
-    goToTab("check");
-    document.getElementById("urlInput").focus();
-  }
-});
-const bgImageInput=document.getElementById("bgImageInput");
-const bgImagePickBtn=document.getElementById("bgImagePickBtn");
-const bgImageClearBtn=document.getElementById("bgImageClearBtn");
-const bgImageHint=document.getElementById("bgImageHint");
-bgImagePickBtn.addEventListener("click",()=>bgImageInput.click());
-bgImageInput.addEventListener("change",()=>{
-  const file=bgImageInput.files&&bgImageInput.files[0];
-  if(!file) return;
-  if(!file.type.startsWith("image/")){ toast("Please select an image file"); bgImageInput.value=""; return; }
-  const reader=new FileReader();
-  reader.onload=()=>{
-    document.body.style.backgroundImage="url("+reader.result+")";
-    document.body.classList.add("has-bg-image");
-    bgImageHint.textContent="Active: "+file.name;
-    toast("Background image applied","safe");
-  };
-  reader.onerror=()=>{ toast("Could not read that image"); bgImageInput.value=""; };
-  reader.readAsDataURL(file);
-});
-bgImageClearBtn.addEventListener("click",()=>{
-  document.body.style.backgroundImage="";
-  document.body.classList.remove("has-bg-image");
-  bgImageInput.value="";
-  bgImageHint.textContent="No custom background set";
-  toast("Background cleared","safe");
-});
-document.getElementById("compactToggle").addEventListener("change",e=>{
-  document.body.classList.toggle("compact",e.target.checked);
-});
-const threshSuspiciousEl=document.getElementById("threshSuspicious");
-const threshDangerousEl=document.getElementById("threshDangerous");
-threshSuspiciousEl.addEventListener("input",e=>{
-  THRESH_SUSPICIOUS=Number(e.target.value);
-  document.getElementById("threshSuspiciousVal").textContent=THRESH_SUSPICIOUS;
-  if(THRESH_DANGEROUS<=THRESH_SUSPICIOUS){ THRESH_DANGEROUS=Math.min(100,THRESH_SUSPICIOUS+5); threshDangerousEl.value=THRESH_DANGEROUS; document.getElementById("threshDangerousVal").textContent=THRESH_DANGEROUS; }
-});
-threshDangerousEl.addEventListener("input",e=>{
-  THRESH_DANGEROUS=Number(e.target.value);
-  document.getElementById("threshDangerousVal").textContent=THRESH_DANGEROUS;
-  if(THRESH_SUSPICIOUS>=THRESH_DANGEROUS){ THRESH_SUSPICIOUS=Math.max(5,THRESH_DANGEROUS-5); threshSuspiciousEl.value=THRESH_SUSPICIOUS; document.getElementById("threshSuspiciousVal").textContent=THRESH_SUSPICIOUS; }
-});
-document.getElementById("resetAllBtn").addEventListener("click",()=>{
-  sessionHistory=[]; stats={total:0,safe:0,suspicious:0,dangerous:0};
-  document.getElementById("statTotal").textContent="0";
-  document.getElementById("statSafe").textContent="0";
-  document.getElementById("statSuspicious").textContent="0";
-  document.getElementById("statDangerous").textContent="0";
-  document.getElementById("railScanCount").textContent="0";
-  renderHistory();
-  toast("Session data cleared","safe");
-});
-document.getElementById("exportHistoryBtn").addEventListener("click",()=>{
-  if(!sessionHistory.length){ toast("Nothing to export yet"); return; }
-  const blob=new Blob([JSON.stringify(sessionHistory,null,2)],{type:"application/json"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url; a.download="scamguard-history.json";
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-  toast("History exported","safe");
-});
-function normalizeUrl(raw){
-  let s=(raw||"").trim();
-  if(!s) return null;
-  if(!/^https?:\/\//i.test(s)) s="https://"+s;
-  try{ return new URL(s); }catch{ return null; }
-}
-function isIpAddress(host){ return /^\d{1,3}(\.\d{1,3}){3}$/.test(host); }
-function levenshtein(a,b){
-  const m=a.length,n=b.length;
-  const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
-  for(let i=0;i<=m;i++) dp[i][0]=i;
-  for(let j=0;j<=n;j++) dp[0][j]=j;
-  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
-    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
-  return dp[m][n];
-}
-function closestBrandMatch(hostBare){
-  let closestBrand=null,closestDist=Infinity;
-  for(const b of BRAND_DOMAINS){
-    const bare=b.split(".")[0];
-    if(hostBare===bare) continue;
-    const d=levenshtein(hostBare,bare);
-    if(d<closestDist){ closestDist=d; closestBrand=b; }
-  }
-  return {closestBrand,closestDist};
-}
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-function runHeuristics(urlObj){
-  const flags=[];
-  const host=urlObj.hostname.toLowerCase();
-  const full=urlObj.href.toLowerCase();
-  let domainScore=0, structureScore=0, contentScore=0, brandScore=0;
-  if(isIpAddress(host)){ flags.push({text:"Uses raw IP address instead of domain",level:"danger"}); domainScore+=55; }
-  for(const tld of SUSPICIOUS_TLDS){
-    if(host.endsWith(tld)){ flags.push({text:"High-abuse TLD detected ("+tld+")",level:"warning"}); domainScore+=30; break; }
-  }
-  if(host.includes("xn--")){ flags.push({text:"Punycode / IDN domain (possible lookalike)",level:"warning"}); domainScore+=30; }
-  const parts=host.split(".");
-  if(parts.length>=4){ flags.push({text:"Unusually long subdomain chain",level:"warning"}); structureScore+=32; }
-  if(host.length>40){ flags.push({text:"Extremely long domain name",level:"warning"}); structureScore+=26; }
-  if(urlObj.href.includes("@")){ flags.push({text:"Contains @ symbol (credential phishing trick)",level:"danger"}); structureScore+=40; }
-  if(urlObj.port && urlObj.port!=="80" && urlObj.port!=="443"){ flags.push({text:"Non-standard port :"+urlObj.port,level:"warning"}); structureScore+=22; }
-  if(urlObj.protocol==="http:"){ flags.push({text:"Insecure HTTP protocol",level:"warning"}); structureScore+=18; }
-  if(/[0-9]{4,}/.test(host)){ flags.push({text:"Long number sequence in domain",level:"warning"}); structureScore+=16; }
-  let keywordHits=0; const found=[];
-  for(const kw of SUSPICIOUS_KEYWORDS){ if(full.includes(kw)){ keywordHits++; found.push(kw); } }
-  if(keywordHits>=3){ flags.push({text:"Multiple phishing keywords: "+found.slice(0,5).join(", "),level:"danger"}); contentScore+=85; }
-  else if(keywordHits>=1){ flags.push({text:"Phishing keyword found: "+found.join(", "),level:"warning"}); contentScore+=40; }
-  const hostBare=host.replace(/^www\./,"").split(".")[0];
-  const {closestBrand,closestDist}=closestBrandMatch(hostBare);
-  if(closestBrand && closestDist>0 && closestDist<=2 && closestBrand.split(".")[0].length>3){
-    flags.push({text:"Domain closely resembles "+closestBrand+" (possible typosquat)",level:"danger"});
-    brandScore+=85;
-  }
-  const categories={domain:Math.min(domainScore,100),structure:Math.min(structureScore,100),content:Math.min(contentScore,100),brand:Math.min(brandScore,100)};
-  const overall=Math.min(Math.round(categories.domain*0.32+categories.structure*0.24+categories.content*0.24+categories.brand*0.20),100);
-  return {score:overall,categories,flags};
-}
-async function checkGacs(host){
-  try{
-    const res=await fetch("https://gacs.app/api/public/check-domain?host="+encodeURIComponent(host));
-    if(!res.ok) throw new Error("fail");
-    return await res.json();
-  }catch{ return {listed:false,error:true}; }
-}
-function levelFor(score){
-  if(score>=THRESH_DANGEROUS) return "dangerous";
-  if(score>=THRESH_SUSPICIOUS) return "suspicious";
-  return "safe";
-}
-function saveHistory(entry){
-  sessionHistory.unshift(entry);
-  sessionHistory=sessionHistory.slice(0,50);
-  stats.total++;
-  stats[entry.level]++;
-  document.getElementById("statTotal").textContent=stats.total;
-  document.getElementById("statSafe").textContent=stats.safe;
-  document.getElementById("statSuspicious").textContent=stats.suspicious;
-  document.getElementById("statDangerous").textContent=stats.dangerous;
-  document.getElementById("railScanCount").textContent=stats.total;
-}
-function renderHistory(){
-  const historyList=document.getElementById("historyList");
-  if(!sessionHistory.length){ historyList.innerHTML='<div class="empty">No scans yet</div>'; return; }
-  historyList.innerHTML=sessionHistory.map(h=>`
-    <div class="history-item" data-url="${h.url}">
-      <span class="url">${h.url}</span>
-      <span class="badge ${h.level}">${h.level}</span>
-    </div>`).join("");
-  historyList.querySelectorAll(".history-item").forEach(el=>{
-    el.addEventListener("click",()=>{
-      document.getElementById("urlInput").value=el.dataset.url;
-      goToTab("check");
-      checkUrl();
-    });
-  });
-}
-async function runScanSequence(promise){
-  const seq=document.getElementById("seq");
-  const steps=[...seq.querySelectorAll(".seq-step")];
-  seq.classList.add("visible");
-  steps.forEach(s=>s.classList.remove("active","done"));
-  const stepDelay=260;
-  let i=0;
-  const stepTimer=setInterval(()=>{
-    if(i>0){ steps[i-1].classList.remove("active"); steps[i-1].classList.add("done"); }
-    if(i<steps.length){ steps[i].classList.add("active"); i++; }
-    else clearInterval(stepTimer);
-  },stepDelay);
-  const minWait=sleep(stepDelay*steps.length+150);
-  const [dataResult]=await Promise.all([promise,minWait]);
-  clearInterval(stepTimer);
-  steps.forEach(s=>{ s.classList.remove("active"); s.classList.add("done"); });
-  await sleep(180);
-  seq.classList.remove("visible");
-  return dataResult;
-}
-let lastResultSummary="";
-async function checkUrl(rawOverride){
-  const urlInput=document.getElementById("urlInput");
-  const raw=rawOverride||urlInput.value;
-  const urlObj=normalizeUrl(raw);
-  if(!urlObj){ toast("Enter a valid URL"); return; }
-  const checkBtn=document.getElementById("checkBtn");
-  const result=document.getElementById("result");
-  const flagsList=document.getElementById("flagsList");
-  const flagsSection=document.getElementById("flagsSection");
-  checkBtn.disabled=true;
-  result.classList.remove("visible");
-  flagsList.innerHTML="";
-  flagsSection.style.display="none";
-  const host=urlObj.hostname;
-  const heuristics=runHeuristics(urlObj);
-  const gacs=await runScanSequence(checkGacs(host));
-  let finalScore=heuristics.score;
-  let level=levelFor(finalScore);
-  let text="Looks Clean", sub="No major red flags detected";
-  if(gacs.listed){ level="dangerous"; finalScore=Math.max(finalScore,Math.max(THRESH_DANGEROUS+5,92)); text="Known Scam Domain"; sub=(gacs.category||"phishing")+" · "+(gacs.severity||"high")+" severity"; }
-  else if(level==="dangerous"){ text="High Risk"; sub="Multiple strong phishing signals"; }
-  else if(level==="suspicious"){ text="Suspicious"; sub="Some warning signs present"; }
-  document.getElementById("domainValue").textContent=host;
-  document.getElementById("gacsValue").textContent=gacs.error?"Unavailable":gacs.listed?"LISTED":"Not listed";
-  document.getElementById("protoValue").textContent=urlObj.protocol.replace(":","").toUpperCase();
-  document.getElementById("scoreValue").textContent=finalScore+" / 100";
-  document.getElementById("scoreNum").textContent=finalScore;
-  requestAnimationFrame(()=>{
-    document.getElementById("scoreRing").style.background=`conic-gradient(var(--accent) ${finalScore}%, var(--line) 0)`;
-    const c=heuristics.categories;
-    document.getElementById("bdDomain").style.width=c.domain+"%"; document.getElementById("bdDomainVal").textContent=c.domain;
-    document.getElementById("bdStructure").style.width=c.structure+"%"; document.getElementById("bdStructureVal").textContent=c.structure;
-    document.getElementById("bdContent").style.width=c.content+"%"; document.getElementById("bdContentVal").textContent=c.content;
-    document.getElementById("bdBrand").style.width=c.brand+"%"; document.getElementById("bdBrandVal").textContent=c.brand;
-  });
-  const verdict=document.getElementById("verdict");
-  verdict.className="verdict "+level;
-  document.getElementById("verdictText").textContent=text;
-  document.getElementById("verdictSub").textContent=sub;
-  if(heuristics.flags.length||gacs.listed){
-    flagsSection.style.display="block";
-    if(gacs.listed){
-      const li=document.createElement("li"); li.className="danger";
-      li.innerHTML='<span class="dot"></span><span>Blacklisted by GACS as '+(gacs.category||"scam")+(gacs.report_url?' — <a href="'+gacs.report_url+'" target="_blank" rel="noopener" style="color:#ff6b74">report</a>':"")+'</span>';
-      flagsList.appendChild(li);
-    }
-    heuristics.flags.forEach(f=>{
-      const li=document.createElement("li");
-      if(f.level==="danger") li.className="danger";
-      li.innerHTML='<span class="dot"></span><span>'+f.text+'</span>';
-      flagsList.appendChild(li);
-    });
-  }
-  lastResultSummary=`URL: ${urlObj.href}\nVerdict: ${text} (score ${finalScore}/100)\nDomain: ${host}\nBreakdown: domain ${heuristics.categories.domain}, structure ${heuristics.categories.structure}, content ${heuristics.categories.content}, brand ${heuristics.categories.brand}\nSignals: ${heuristics.flags.map(f=>f.text).join("; ")||"none"}`;
-  saveHistory({url:urlObj.href,level,score:finalScore,ts:Date.now()});
-  result.classList.add("visible");
-  checkBtn.disabled=false;
-}
-document.getElementById("checkBtn").addEventListener("click",()=>checkUrl());
-document.getElementById("urlInput").addEventListener("keydown",e=>{ if(e.key==="Enter") checkUrl(); });
-document.getElementById("copyBtn").addEventListener("click",()=>{
-  const txt=document.getElementById("domainValue").textContent+" | Score: "+document.getElementById("scoreValue").textContent+" | "+document.getElementById("verdictText").textContent;
-  navigator.clipboard.writeText(txt).then(()=>toast("Copied to clipboard","safe")).catch(()=>toast("Copy failed — select and copy manually"));
-});
-document.getElementById("clearBtn").addEventListener("click",()=>{
-  document.getElementById("result").classList.remove("visible");
-  document.getElementById("urlInput").value="";
-});
-document.getElementById("clearHistoryBtn").addEventListener("click",()=>{ sessionHistory=[]; renderHistory(); toast("History cleared","safe"); });
-document.getElementById("askAiBtn").addEventListener("click",()=>{
-  goToTab("ai");
-  if(lastResultSummary) sendAiMessage("Here's a scan result — walk me through what it means and what I should do:\n\n"+lastResultSummary);
-});
-document.getElementById("extractBtn").addEventListener("click",()=>{
-  const text=document.getElementById("textInput").value;
-  const regex=/https?:\/\/[^\s<>"{}|\\^`\[\]]+/gi;
-  const matches=[...new Set(text.match(regex)||[])];
-  const extractedLinks=document.getElementById("extractedLinks");
-  if(!matches.length){ extractedLinks.innerHTML='<div class="empty">No links found</div>'; return; }
-  extractedLinks.innerHTML=matches.map(u=>`
-    <div class="extracted-link"><span>${u}</span><button class="btn btn-ghost" style="padding:6px 12px;font-size:.72rem" data-scan="${u}">Scan</button></div>`).join("");
-  extractedLinks.querySelectorAll("[data-scan]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      document.getElementById("urlInput").value=btn.dataset.scan;
-      goToTab("check");
-      checkUrl(btn.dataset.scan);
-    });
-  });
-});
-function urlToolMarkup(title,placeholder){
-  return `<strong>${title}</strong><br><br>
-    <input type="text" id="toolUrlInput" placeholder="${placeholder}" style="margin-bottom:10px"/>
-    <div><button class="btn btn-ghost" id="toolUrlBtn">Analyze</button></div>
-    <div id="toolUrlOutput" style="margin-top:14px;font-family:var(--font-mono);font-size:.85rem;line-height:1.7"></div>`;
-}
-function wireUrlTool(compute){
-  document.getElementById("toolUrlBtn").addEventListener("click",()=>runToolUrl(compute));
-  document.getElementById("toolUrlInput").addEventListener("keydown",e=>{ if(e.key==="Enter") runToolUrl(compute); });
-}
-function runToolUrl(compute){
-  const raw=document.getElementById("toolUrlInput").value;
-  const urlObj=normalizeUrl(raw);
-  const out=document.getElementById("toolUrlOutput");
-  if(!urlObj){ out.innerHTML='<span style="color:#ff6b74">Enter a valid URL first.</span>'; return; }
-  out.innerHTML=compute(urlObj);
-}
-document.querySelectorAll(".tool-card").forEach(card=>{
-  card.addEventListener("click",()=>{
-    document.querySelectorAll(".tool-card").forEach(c=>c.classList.remove("active-tool"));
-    card.classList.add("active-tool");
-    const tool=card.dataset.tool;
-    const toolResult=document.getElementById("toolResult");
-    const toolOutput=document.getElementById("toolOutput");
-    toolResult.style.display="block";
-    toolResult.scrollIntoView({behavior:"smooth",block:"nearest"});
-    if(tool==="password"){
-      toolOutput.innerHTML=`<strong>Password Strength</strong><br><br>
-        <input type="password" id="pwInput" placeholder="Type a password (checked locally, never sent anywhere)" style="margin-bottom:12px" autocomplete="new-password"/>
-        <div id="pwOutput" style="font-family:var(--font-mono);font-size:.85rem"></div>`;
-      const pwInput=document.getElementById("pwInput");
-      pwInput.addEventListener("input",()=>{
-        const pw=pwInput.value;
-        let pool=0;
-        if(/[a-z]/.test(pw)) pool+=26;
-        if(/[A-Z]/.test(pw)) pool+=26;
-        if(/[0-9]/.test(pw)) pool+=10;
-        if(/[^A-Za-z0-9]/.test(pw)) pool+=32;
-        const bits=(pw.length>0 && pool>0)?Math.log2(pool)*pw.length:0;
-        let verdict="Very Weak",color="#ff2d3a";
-        if(bits>=80){ verdict="Very Strong"; color="#31d67c"; }
-        else if(bits>=60){ verdict="Strong"; color="#31d67c"; }
-        else if(bits>=40){ verdict="Moderate"; color="#ffb02e"; }
-        else if(bits>=20){ verdict="Weak"; color="#ffb02e"; }
-        document.getElementById("pwOutput").innerHTML=`Length: ${pw.length} · Entropy: ~${Math.round(bits)} bits<br>Verdict: <span style="color:${color};font-weight:700">${verdict}</span>`;
-      });
-      return;
-    }
-    if(tool==="decode"){
-      toolOutput.innerHTML=`<strong>Link Decoder</strong><br><br>
-        <textarea id="decodeInput" placeholder="Paste a Base64 string or URL-encoded link" style="min-height:80px"></textarea>
-        <div style="margin-top:10px"><button class="btn btn-ghost" id="decodeBtn">Decode</button></div>
-        <div id="decodeOutput" style="margin-top:12px;font-family:var(--font-mono);font-size:.85rem;word-break:break-all"></div>`;
-      document.getElementById("decodeBtn").addEventListener("click",()=>{
-        const input=document.getElementById("decodeInput").value.trim();
-        const out=document.getElementById("decodeOutput");
-        let results=[];
-        try{ results.push("URL-decoded: "+decodeURIComponent(input)); }catch{}
-        try{ results.push("Base64-decoded: "+atob(input.replace(/-/g,"+").replace(/_/g,"/"))); }catch{}
-        out.innerHTML=results.length?results.map(r=>r.replace(/</g,"&lt;")).join("<br><br>"):"Could not decode — not valid Base64 or URL encoding.";
-      });
-      return;
-    }
-    if(tool==="sender"){
-      toolOutput.innerHTML=`<strong>Sender Domain Check</strong><br><br>
-        <input type="text" id="senderInput" placeholder="e.g. security@paypa1-support.com" style="margin-bottom:10px"/>
-        <div><button class="btn btn-ghost" id="senderBtn">Check</button></div>
-        <div id="senderOutput" style="margin-top:12px;font-family:var(--font-mono);font-size:.85rem"></div>`;
-      document.getElementById("senderBtn").addEventListener("click",()=>{
-        const val=document.getElementById("senderInput").value.trim().toLowerCase();
-        const out=document.getElementById("senderOutput");
-        const domainMatch=val.match(/@([a-z0-9.-]+)/);
-        if(!domainMatch){ out.innerHTML='<span style="color:#ff6b74">Enter a full email address (name@domain.com).</span>'; return; }
-        const domain=domainMatch[1];
-        const {closestBrand,closestDist}=closestBrandMatch(domain.split(".")[0]);
-        let msg=`Sender domain: <strong>${domain}</strong><br>`;
-        msg+=(closestBrand && closestDist<=2 && closestBrand.split(".")[0].length>3)
-          ? `<span style="color:#ff6b74">⚠ Closely resembles ${closestBrand} — likely impersonation</span>`
-          : `No close match to known brand domains in our list — verify independently.`;
-        out.innerHTML=msg;
-      });
-      return;
-    }
-    if(tool==="bulk"){
-      toolOutput.innerHTML=`<strong>Bulk Scanner</strong><br><br>
-        <textarea id="bulkInput" placeholder="Paste multiple URLs, one per line" style="min-height:110px"></textarea>
-        <div style="margin-top:10px"><button class="btn btn-ghost" id="bulkBtn">Scan All</button></div>
-        <div id="bulkOutput" style="margin-top:14px;display:flex;flex-direction:column;gap:8px"></div>`;
-      document.getElementById("bulkBtn").addEventListener("click",async ()=>{
-        const lines=document.getElementById("bulkInput").value.split("\n").map(l=>l.trim()).filter(Boolean);
-        const out=document.getElementById("bulkOutput");
-        if(!lines.length){ out.innerHTML='<span style="color:#ff6b74">Paste at least one URL.</span>'; return; }
-        out.innerHTML='<span style="font-family:var(--font-mono);font-size:.82rem;color:var(--muted)">Scanning '+lines.length+' links…</span>';
-        const results=await Promise.all(lines.map(async raw=>{
-          const urlObj=normalizeUrl(raw);
-          if(!urlObj) return {raw,level:"suspicious",label:"Invalid URL"};
-          const h=runHeuristics(urlObj);
-          const g=await checkGacs(urlObj.hostname);
-          let score=h.score;
-          let level=levelFor(score);
-          if(g.listed){ level="dangerous"; score=Math.max(score,92); }
-          return {raw:urlObj.href,level,label:level==="dangerous"?"High Risk":level==="suspicious"?"Suspicious":"Clean",score};
-        }));
-        results.forEach(r=>saveHistory({url:r.raw,level:r.level,score:r.score||0,ts:Date.now()}));
-        out.innerHTML=results.map(r=>`
-          <div class="extracted-link"><span>${r.raw}</span><span class="badge ${r.level}">${r.label}</span></div>`).join("");
-        toast(lines.length+" links scanned — logged to History","safe");
-      });
-      return;
-    }
-    if(tool==="ip"){
-      toolOutput.innerHTML=urlToolMarkup("IP Detector","https://192.168.1.1/login");
-      wireUrlTool(u=>{
-        const isIp=isIpAddress(u.hostname);
-        return `Host: ${u.hostname}<br>Result: ${isIp?'<span style="color:#ff2d3a">Raw IP detected — high risk</span>':'<span style="color:#31d67c">Uses domain name</span>'}`;
-      });
-    } else if(tool==="keywords"){
-      toolOutput.innerHTML=urlToolMarkup("Keyword Scanner","https://verify-account-now.com");
-      wireUrlTool(u=>{
-        const found=SUSPICIOUS_KEYWORDS.filter(k=>u.href.toLowerCase().includes(k));
-        return `Found ${found.length} trigger word(s)<br>${found.length?found.join(", "):"None"}`;
-      });
-    } else if(tool==="tld"){
-      toolOutput.innerHTML=urlToolMarkup("TLD Risk Check","https://freegift.xyz");
-      wireUrlTool(u=>{
-        const host=u.hostname.toLowerCase();
-        const hit=SUSPICIOUS_TLDS.find(t=>host.endsWith(t));
-        return `Domain: ${host}<br>Result: ${hit?'<span style="color:#ffb02e">Risky TLD '+hit+'</span>':'<span style="color:#31d67c">Common TLD</span>'}`;
-      });
-    } else if(tool==="length"){
-      toolOutput.innerHTML=urlToolMarkup("Length Analyzer","https://example.com");
-      wireUrlTool(u=>{
-        const host=u.hostname.toLowerCase();
-        return `Host length: ${host.length} chars<br>Subdomains: ${host.split(".").length-1}<br>${host.length>40?'<span style="color:#ffb02e">Suspiciously long</span>':'<span style="color:#31d67c">Normal length</span>'}`;
-      });
-    } else if(tool==="typo"){
-      toolOutput.innerHTML=urlToolMarkup("Typosquat Detector","https://paypa1.com");
-      wireUrlTool(u=>{
-        const hostBare=u.hostname.toLowerCase().replace(/^www\./,"").split(".")[0];
-        const {closestBrand,closestDist}=closestBrandMatch(hostBare);
-        const likely=closestDist<=2 && closestBrand.split(".")[0].length>3;
-        return `Domain: ${u.hostname}<br>Closest brand match: ${closestBrand} (edit distance ${closestDist})<br>${likely?'<span style="color:#ff2d3a">Likely typosquat</span>':'<span style="color:#31d67c">No close match</span>'}`;
-      });
-    } else if(tool==="punycode"){
-      toolOutput.innerHTML=urlToolMarkup("Punycode Revealer","https://xn--pple-43d.com");
-      wireUrlTool(u=>{
-        const host=u.hostname.toLowerCase();
-        const isPuny=host.includes("xn--");
-        return `Host: ${host}<br>Result: ${isPuny?'<span style="color:#ff2d3a">Punycode detected — may visually mimic a trusted brand</span>':'<span style="color:#31d67c">No punycode encoding found</span>'}`;
-      });
-    }
-  });
-});
-const aiMsgs=document.getElementById("aiMsgs");
-const aiInput=document.getElementById("aiInput");
-const aiSendBtn=document.getElementById("aiSendBtn");
-let aiHistory=[];
-function renderMarkdownLite(text){
-  const esc=text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  const lines=esc.split("\n");
-  let html=""; let inList=false;
-  for(const line of lines){
-    const trimmed=line.trim();
-    if(/^[-*]\s+/.test(trimmed)){
-      if(!inList){ html+="<ul>"; inList=true; }
-      html+="<li>"+trimmed.replace(/^[-*]\s+/,"")+"</li>";
-    } else {
-      if(inList){ html+="</ul>"; inList=false; }
-      if(trimmed) html+="<p>"+trimmed+"</p>";
-    }
-  }
-  if(inList) html+="</ul>";
-  html=html.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/`(.+?)`/g,"<code>$1</code>");
-  return html||"<p></p>";
-}
-function addMsg(role,text){
-  const div=document.createElement("div");
-  div.className="msg "+(role==="user"?"user":"ai");
-  if(role!=="user"){
-    const tag=document.createElement("span");
-    tag.className="tag"; tag.textContent="Analyst";
-    div.appendChild(tag);
-    const body=document.createElement("div");
-    body.innerHTML=renderMarkdownLite(text);
-    div.appendChild(body);
-  } else {
-    div.textContent=text;
-  }
-  aiMsgs.appendChild(div);
-  aiMsgs.scrollTop=aiMsgs.scrollHeight;
-  return div;
-}
-function showTyping(){
-  const div=document.createElement("div");
-  div.className="ai-typing"; div.id="aiTyping";
-  div.innerHTML="<span></span><span></span><span></span>";
-  aiMsgs.appendChild(div);
-  aiMsgs.scrollTop=aiMsgs.scrollHeight;
-}
-function hideTyping(){ const t=document.getElementById("aiTyping"); if(t) t.remove(); }
-function localAnalyze(text){
-  const t=text.toLowerCase();
-  if(t.includes("here's a scan result") || t.includes("verdict:") && t.includes("score")){
-    if(t.includes("known scam") || t.includes("high risk") || /score\s*(9\d|100)/.test(t)){
-      return `**Likely Scam / High Risk**
-
-This scan already flagged strong danger signals.
-
-- Do **not** open the link, enter any credentials, or send money
-- Close the tab / delete the message
-- If you already interacted, change passwords on a different device and enable 2FA
-- Report the domain to your email/provider or to sites like GACS / Google Safe Browsing
-
-Never share passwords, 2FA codes, or seed phrases with anyone — including this tool.`;
-    }
-    if(t.includes("suspicious") || /score\s*([3-8]\d)/.test(t)){
-      return `**Suspicious**
-
-Some warning signs are present, but it is not a confirmed blacklist hit.
-
-- Avoid clicking until you verify through an official channel
-- Type the real website address yourself instead of using the link
-- Check the domain carefully for typos or extra words
-- If it claims to be a bank, package service, or big brand, call them using the number on your card/statement or their official site
-
-When in doubt, treat it as risky.`;
-    }
-    return `**Looks relatively clean from the signals we have**
-
-No major red flags in the heuristic + blacklist pass.
-
-- Still stay cautious with unexpected links
-- Prefer typing known domains yourself
-- Never enter passwords or seed phrases from a random message
-
-If something still feels off, describe the full message and I can dig further.`;
-  }
-  if(/package|parcel|delivery|could not be delivered|track.*(package|order)|bit\.ly\/pkg|confirm your address/.test(t)){
-    return `**Likely Scam** — classic package / delivery text pattern
-
-Common red flags:
-- Unexpected "delivery failed" or "confirm address" text
-- Shortened link (bit.ly, tinyurl, etc.)
-- Urgency or threat of return-to-sender fees
-- Asks you to "update" payment or address on a non-official site
-
-What to do:
-- Do **not** click the link
-- Check the official carrier site/app (USPS, FedEx, UPS, DHL, your local post) by typing the address yourself
-- If you have a real tracking number, look it up only on the carrier's official page
-- Delete the message and block the sender
-
-Real carriers almost never ask you to "confirm" personal details via a random SMS link.`;
-  }
-  if(/bank|account.*(verify|suspend|lock|unusual)|verify.*(account|identity)|call.*(bank|support)|security.*(department|team)|otp|one.?time.?password|card.*(block|fraud)/.test(t)){
-    return `**Likely Scam** — bank / account impersonation pattern
-
-Banks and payment apps almost never:
-- Call or text asking you to "verify" by giving codes, PINs, or full card numbers
-- Ask you to transfer money to a "safe account"
-- Demand you install remote-access apps
-
-Red flags here:
-- Unsolicited contact claiming urgency
-- Request to call a number they provide (or stay on the line)
-- Pressure to act immediately or "lose access"
-
-Safe steps:
-- Hang up / ignore the message
-- Call your bank using the number on the back of your card or their official website (not a number from the message)
-- Never share OTP, PIN, password, or seed phrase
-- If you already gave info, freeze the card/account and report to the bank right away`;
-  }
-  if(/crypto|nft|airdrop|wallet|seed.?phrase|metamask|binance|coinbase|claim.*(token|reward|nft)|connect.?wallet|gas.?fee/.test(t)){
-    return `**Likely Scam** — common crypto / NFT airdrop pattern
-
-Typical tactics:
-- "Free" tokens or NFT drops that require connecting your wallet
-- Requests for seed phrase / private key "to claim"
-- Fake support that asks you to "validate" or send a small amount first
-- Urgency + FOMO language
-
-Rules that keep you safe:
-- **Never** share your seed phrase or private key with anyone or any site
-- Real airdrops do not need your seed phrase
-- Check official project channels (verified Twitter/X, Discord, website you typed yourself)
-- If a site asks you to "approve" unlimited spending or send crypto first, walk away
-
-If you already connected a wallet to a suspicious site, move funds to a new wallet (new seed) as soon as possible and revoke approvals on a trusted tool.`;
-  }
-  if(/gift.?card|itunes|steam.?card|google.?play.?card|wire.?transfer|western.?union|send.*(money|payment)|pay.*(fee|tax|release)/.test(t)){
-    return `**Likely Scam** — payment / gift-card demand
-
-Legitimate companies, government agencies, and banks do **not** ask you to pay fees or taxes with gift cards, crypto, or wire transfers.
-
-- Refuse any request for gift cards or irreversible payment methods
-- Do not send money to "release" a package, clear a tax, or unlock an account
-- Report the contact and block it
-
-If you already paid, contact the gift-card issuer / payment provider immediately and file a report with local authorities or consumer protection.`;
-  }
-  if(/romance|dating|investment.*(return|guaranteed)|double.?your|work.?from.?home.*(fee|pay)|job.*(offer|placement).*fee/.test(t)){
-    return `**Suspicious / High risk of scam**
-
-These patterns frequently turn into long-con fraud:
-- Emotional pressure or "guaranteed" returns
-- Requests for money, gift cards, or crypto to "help" or "unlock" funds
-- Job offers that require upfront payment
-
-Protect yourself:
-- Never send money or crypto to someone you only know online
-- Verify any company or job through official channels
-- Be extremely wary of urgency + secrecy
-
-If money already left, document everything and report to the platform and local cybercrime / consumer agencies.`;
-  }
-  const urlMatch=text.match(/https?:\/\/[^\s<>"']+/i) || text.match(/(?:^|\s)([a-z0-9][-a-z0-9.]*\.[a-z]{2,}(?:\/[^\s]*)?)/i);
-  if(urlMatch){
-    const raw=urlMatch[0].trim();
-    const urlObj=normalizeUrl(raw);
-    if(urlObj){
-      const h=runHeuristics(urlObj);
-      const level=levelFor(h.score);
-      const flags=h.flags.map(f=>"- "+f.text).join("\n") || "- No strong heuristic flags";
-      let verdict="**Looks relatively clean** from local signals";
-      if(level==="dangerous") verdict="**High Risk**";
-      else if(level==="suspicious") verdict="**Suspicious**";
-      return `${verdict} (local score ${h.score}/100)
-
-Domain: \`${urlObj.hostname}\`
-
-Signals:
-${flags}
-
-Advice:
-- Prefer typing known sites yourself instead of clicking
-- Never enter passwords or seed phrases on unexpected pages
-- Cross-check the domain on a second device or official app when money or accounts are involved
-
-(This is offline analysis only — for live blacklist status use the Scan tab.)`;
-    }
-  }
-  return `I can help assess scam risk from messages, links, or what happened.
-
-Paste any of these and I'll give a clear verdict:
-- The full text of an SMS / email / chat
-- A suspicious link
-- A short description of the call or conversation
-
-Common patterns I flag quickly: package delivery texts, bank "verify your account" calls, crypto airdrops, gift-card demands, and fake job/investment offers.
-
-**Never share passwords, 2FA codes, or seed phrases** with anyone — including this tool.`;
-}
-async function sendAiMessage(overrideText){
-  const text=(overrideText!==undefined?overrideText:aiInput.value).trim();
-  if(!text) return;
-  addMsg("user",text);
-  aiHistory.push({role:"user",content:text});
-  if(overrideText===undefined) aiInput.value="";
-  aiSendBtn.disabled=true;
-  showTyping();
-  await sleep(400 + Math.random()*300);
-  hideTyping();
-  const reply=localAnalyze(text);
-  addMsg("ai",reply);
-  aiHistory.push({role:"assistant",content:reply});
-  aiSendBtn.disabled=false;
-}
+let thresholdSuspicious=25,thresholdDangerous=55;
+let history=[];
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function toast(msg,type){const t=document.getElementById("toast");t.textContent=msg;t.className="toast show"+(type?" "+type:"");setTimeout(()=>t.classList.remove("show"),2600)}
+function normalizeUrl(raw){try{let s=raw.trim();if(!s)return null;if(!/^https?:\/\//i.test(s))s="https://"+s;const u=new URL(s);if(!u.hostname)return null;return u}catch{return null}}
+function isIpAddress(host){return /^\d{1,3}(\.\d{1,3}){3}$/.test(host)}
+function levenshtein(a,b){const m=a.length,n=b.length;const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));for(let i=0;i<=m;i++)dp[i][0]=i;for(let j=0;j<=n;j++)dp[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);return dp[m][n]}
+function closestBrandMatch(hostBare){let closestBrand=null,closestDist=Infinity;for(const b of BRAND_DOMAINS){const bare=b.split(".")[0];if(hostBare===bare)continue;const d=levenshtein(hostBare,bare);if(d<closestDist){closestDist=d;closestBrand=b}}return{closestBrand,closestDist}}
+function runHeuristics(urlObj){const flags=[];const host=urlObj.hostname.toLowerCase();const full=urlObj.href.toLowerCase();let domainScore=0,structureScore=0,contentScore=0,brandScore=0;if(isIpAddress(host)){flags.push({text:"Uses raw IP address instead of domain",danger:true});domainScore+=55}const tldHit=SUSPICIOUS_TLDS.find(t=>host.endsWith(t));if(tldHit){flags.push({text:"High-abuse TLD detected ("+tldHit+")",danger:false});domainScore+=30}if(host.includes("xn--")){flags.push({text:"Punycode / IDN domain (possible lookalike)",danger:false});domainScore+=30}const parts=host.split(".");if(parts.length>=4){flags.push({text:"Unusually long subdomain chain",danger:false});structureScore+=32}if(host.length>40){flags.push({text:"Extremely long domain name",danger:false});structureScore+=26}if(full.includes("@")){flags.push({text:"Contains @ symbol (credential phishing trick)",danger:true});structureScore+=40}const port=urlObj.port;if(port&&port!=="80"&&port!=="443"){flags.push({text:"Non-standard port :"+port,danger:false});structureScore+=22}if(urlObj.protocol==="http:"){flags.push({text:"Insecure HTTP protocol",danger:false});structureScore+=18}if(/[0-9]{4,}/.test(host)){flags.push({text:"Long number sequence in domain",danger:false});structureScore+=16}const found=SUSPICIOUS_KEYWORDS.filter(k=>full.includes(k));if(found.length>=3){flags.push({text:"Multiple phishing keywords: "+found.slice(0,5).join(", "),danger:true});contentScore+=85}else if(found.length>=1){flags.push({text:"Phishing keyword found: "+found.join(", "),danger:false});contentScore+=40}const hostBare=host.replace(/^www\./,"").split(".")[0];const{closestBrand,closestDist}=closestBrandMatch(hostBare);if(closestBrand&&closestDist>=1&&closestDist<=2&&closestBrand.split(".")[0].length>3){flags.push({text:"Domain closely resembles "+closestBrand+" (possible typosquat)",danger:true});brandScore+=85}domainScore=Math.min(100,domainScore);structureScore=Math.min(100,structureScore);contentScore=Math.min(100,contentScore);brandScore=Math.min(100,brandScore);const overall=Math.min(100,Math.round(domainScore*0.32+structureScore*0.24+contentScore*0.24+brandScore*0.20));return{score:overall,domainScore,structureScore,contentScore,brandScore,flags}}
+function levelFor(score){if(score>=thresholdDangerous)return"dangerous";if(score>=thresholdSuspicious)return"suspicious";return"safe"}
+const memStore={};
+function lsGet(k){try{return localStorage.getItem(k)}catch{return memStore[k]??null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch{memStore[k]=v}}
+function lsDel(k){try{localStorage.removeItem(k)}catch{delete memStore[k]}}
+function saveHistory(entry){history.unshift(entry);if(history.length>50)history.pop();lsSet("sg_history",JSON.stringify(history));updateStats()}
+function loadHistory(){try{history=JSON.parse(lsGet("sg_history")||"[]")}catch{history=[]}updateStats();renderHistory()}
+function updateStats(){const total=history.length;const safe=history.filter(h=>h.level==="safe").length;const sus=history.filter(h=>h.level==="suspicious").length;const dan=history.filter(h=>h.level==="dangerous").length;document.getElementById("statTotal").textContent=total;document.getElementById("statSafe").textContent=safe;document.getElementById("statSuspicious").textContent=sus;document.getElementById("statDangerous").textContent=dan;document.getElementById("railCount").textContent=total}
+function renderHistory(){const list=document.getElementById("historyList");if(!history.length){list.innerHTML='<div class="empty">No scans yet</div>';return}list.innerHTML=history.map(h=>`<div class="history-item"><span class="url">${h.url}</span><span class="badge ${h.level}">${h.level}</span></div>`).join("")}
+async function checkGacs(host){try{const res=await fetch("https://gacs.app/api/public/check-domain?host="+encodeURIComponent(host),{signal:AbortSignal.timeout(6000)});if(!res.ok)return{listed:false,error:true};const j=await res.json();return{listed:!!j.listed,category:j.category||null,severity:j.severity||null,error:false}}catch{return{listed:false,error:true}}}
+async function runScanSequence(promise){const steps=[...document.querySelectorAll("#scanSeq .seq-step")];document.getElementById("scanSeq").classList.add("visible");steps.forEach(s=>s.classList.remove("active","done"));let i=0;const stepDelay=280;const timer=setInterval(()=>{if(i>0){steps[i-1].classList.remove("active");steps[i-1].classList.add("done")}if(i<steps.length){steps[i].classList.add("active");i++}else clearInterval(timer)},stepDelay);const minWait=sleep(stepDelay*steps.length+180);const[result]=await Promise.all([promise,minWait]);clearInterval(timer);steps.forEach(s=>{s.classList.remove("active");s.classList.add("done")});await sleep(160);document.getElementById("scanSeq").classList.remove("visible");return result}
+document.getElementById("scanBtn").addEventListener("click",async()=>{const raw=document.getElementById("urlInput").value;const urlObj=normalizeUrl(raw);if(!urlObj){toast("Enter a valid URL");return}const btn=document.getElementById("scanBtn");btn.disabled=true;document.getElementById("scanResult").classList.remove("visible");const heuristics=runHeuristics(urlObj);const gacs=await runScanSequence(checkGacs(urlObj.hostname));let finalScore=heuristics.score;let level=levelFor(finalScore);let text="Looks Clean";let sub="No major red flags detected";if(gacs.listed){level="dangerous";finalScore=Math.max(finalScore,Math.max(thresholdDangerous+5,92));text="Known Scam Domain";sub=(gacs.category||"phishing")+" · "+(gacs.severity||"high")+" severity"}else if(level==="dangerous"){text="High Risk";sub="Multiple strong phishing signals"}else if(level==="suspicious"){text="Suspicious";sub="Some warning signs present"}document.getElementById("verdictBox").className="verdict "+level;document.getElementById("verdictText").textContent=text;document.getElementById("verdictSub").textContent=sub;document.getElementById("scoreNum").textContent=finalScore;document.getElementById("scoreRing").style.background=`conic-gradient(var(--accent) ${finalScore}%, var(--line) 0)`;document.getElementById("metaDomain").textContent=urlObj.hostname;document.getElementById("metaBlacklist").textContent=gacs.error?"unavailable":(gacs.listed?"LISTED":"not listed");document.getElementById("bdDomain").style.width=heuristics.domainScore+"%";document.getElementById("bdDomainVal").textContent=heuristics.domainScore;document.getElementById("bdStructure").style.width=heuristics.structureScore+"%";document.getElementById("bdStructureVal").textContent=heuristics.structureScore;document.getElementById("bdContent").style.width=heuristics.contentScore+"%";document.getElementById("bdContentVal").textContent=heuristics.contentScore;document.getElementById("bdBrand").style.width=heuristics.brandScore+"%";document.getElementById("bdBrandVal").textContent=heuristics.brandScore;const flagsList=document.getElementById("flagsList");flagsList.innerHTML="";if(gacs.listed){const li=document.createElement("li");li.className="danger";li.innerHTML=`<span class="dot"></span><span>Blacklisted by GACS as ${gacs.category||"scam"}</span>`;flagsList.appendChild(li)}heuristics.flags.forEach(f=>{const li=document.createElement("li");if(f.danger)li.className="danger";li.innerHTML=`<span class="dot"></span><span>${f.text}</span>`;flagsList.appendChild(li)});if(!heuristics.flags.length&&!gacs.listed){flagsList.innerHTML='<li style="border-left-color:var(--safe)"><span class="dot"></span><span>No strong heuristic flags</span></li>'}document.getElementById("scanResult").classList.add("visible");saveHistory({url:urlObj.href,level,score:finalScore,ts:Date.now()});renderHistory();btn.disabled=false;toast("Scan complete",level==="safe"?"safe":"")});
+document.getElementById("urlInput").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("scanBtn").click()});
+document.querySelectorAll(".rail-btn").forEach(btn=>{btn.addEventListener("click",()=>{document.querySelectorAll(".rail-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.getElementById("panel-"+btn.dataset.tab).classList.add("active")})});
+document.getElementById("extractBtn").addEventListener("click",()=>{const text=document.getElementById("extractInput").value;const matches=[...text.matchAll(/https?:\/\/[^\s<>"{}|\\^`\[\]]+/gi)].map(m=>m[0]);const unique=[...new Set(matches)];const box=document.getElementById("extractedLinks");if(!unique.length){box.innerHTML='<div class="empty">No links found</div>';return}box.innerHTML=unique.map(u=>`<div class="extracted-link"><span>${u}</span><button class="btn-ghost scan-one" data-url="${u}">Scan</button></div>`).join("");box.querySelectorAll(".scan-one").forEach(b=>{b.addEventListener("click",()=>{document.getElementById("urlInput").value=b.dataset.url;document.querySelector('[data-tab="scan"]').click();document.getElementById("scanBtn").click()})})});
+document.getElementById("clearHistoryBtn").addEventListener("click",()=>{history=[];lsDel("sg_history");updateStats();renderHistory();toast("History cleared","safe")});
+document.getElementById("resetSessionBtn").addEventListener("click",()=>{history=[];lsDel("sg_history");lsDel("sg_bg");lsDel("sg_bg_name");applyBg(null);updateStats();renderHistory();toast("Session data cleared","safe")});
+document.getElementById("threshSuspicious").addEventListener("input",e=>{thresholdSuspicious=+e.target.value;document.getElementById("threshSusVal").textContent=thresholdSuspicious;lsSet("sg_thresh_sus",String(thresholdSuspicious))});
+document.getElementById("threshDangerous").addEventListener("input",e=>{thresholdDangerous=+e.target.value;document.getElementById("threshDanVal").textContent=thresholdDangerous;lsSet("sg_thresh_dan",String(thresholdDangerous))});
+function setBgDim(pct){const v=Math.max(0,Math.min(90,+pct));document.documentElement.style.setProperty("--bg-dim",(v/100).toFixed(2));document.getElementById("bgDim").value=v;document.getElementById("bgDimVal").textContent=v+"%";lsSet("sg_bg_dim",String(v))}
+function setGridOpacity(pct){const v=Math.max(0,Math.min(60,+pct));document.documentElement.style.setProperty("--grid-opacity",(v/100).toFixed(2));document.getElementById("gridOpacity").value=v;document.getElementById("gridOpVal").textContent=v+"%";lsSet("sg_grid_op",String(v))}
+document.getElementById("bgDim").addEventListener("input",e=>setBgDim(e.target.value));
+document.getElementById("gridOpacity").addEventListener("input",e=>setGridOpacity(e.target.value));
+document.getElementById("compactMode").addEventListener("change",e=>{document.documentElement.style.setProperty("--pad-scale",e.target.checked?"0.72":"1");lsSet("sg_compact",e.target.checked?"1":"0")});
+document.getElementById("hideRailStats").addEventListener("change",e=>{const el=document.querySelector(".rail-stats");if(el)el.style.display=e.target.checked?"none":"";lsSet("sg_hide_rail",e.target.checked?"1":"0")});
+document.getElementById("reduceMotion").addEventListener("change",e=>{document.documentElement.style.setProperty("--motion",e.target.checked?"0":"1");document.body.style.setProperty("animation",e.target.checked?"none":"");document.querySelectorAll(".rail-pulse,.status-dot,.rail-mark::after,.ai-typing span").forEach(n=>{if(e.target.checked)n.style.animation="none";else n.style.animation=""});lsSet("sg_reduce_motion",e.target.checked?"1":"0")});
+(function restoreSettings(){
+  const sus=lsGet("sg_thresh_sus");if(sus){thresholdSuspicious=+sus;document.getElementById("threshSuspicious").value=sus;document.getElementById("threshSusVal").textContent=sus}
+  const dan=lsGet("sg_thresh_dan");if(dan){thresholdDangerous=+dan;document.getElementById("threshDangerous").value=dan;document.getElementById("threshDanVal").textContent=dan}
+  setBgDim(lsGet("sg_bg_dim")||"55");
+  setGridOpacity(lsGet("sg_grid_op")||"28");
+  if(lsGet("sg_compact")==="1"){document.getElementById("compactMode").checked=true;document.documentElement.style.setProperty("--pad-scale","0.72")}
+  if(lsGet("sg_hide_rail")==="1"){document.getElementById("hideRailStats").checked=true;const el=document.querySelector(".rail-stats");if(el)el.style.display="none"}
+  if(lsGet("sg_reduce_motion")==="1"){document.getElementById("reduceMotion").checked=true;document.getElementById("reduceMotion").dispatchEvent(new Event("change"))}
+})();
+const themes={crimson:{accent:"#ff2d3a",deep:"#9c0f1c"},violet:{accent:"#a855f7",deep:"#6b21a8"},cyan:{accent:"#22d3ee",deep:"#0e7490"},emerald:{accent:"#34d399",deep:"#065f46"},amber:{accent:"#fbbf24",deep:"#92400e"}};
+function applyTheme(name){const t=themes[name]||themes.crimson;document.documentElement.style.setProperty("--accent",t.accent);document.documentElement.style.setProperty("--accent-deep",t.deep);document.documentElement.style.setProperty("--accent-glow",t.accent.replace(")",",.26)").replace("rgb","rgba").replace("#",(h=>{const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return`rgba(${r},${g},${b},.26)`})(t.accent)));document.querySelectorAll(".theme-swatch").forEach(s=>s.classList.toggle("active",s.dataset.theme===name));lsSet("sg_theme",name)}
+function buildThemeGrid(){const grid=document.getElementById("themeGrid");grid.innerHTML=Object.entries(themes).map(([k,v])=>`<div class="theme-swatch" data-theme="${k}"><div class="theme-dot" style="background:${v.accent}"></div><div class="tname">${k}</div></div>`).join("");grid.querySelectorAll(".theme-swatch").forEach(s=>s.addEventListener("click",()=>applyTheme(s.dataset.theme)));applyTheme(lsGet("sg_theme")||"crimson")}
+document.querySelectorAll(".tool-card").forEach(card=>{card.addEventListener("click",()=>{document.querySelectorAll(".tool-card").forEach(c=>c.classList.remove("active-tool"));card.classList.add("active-tool");const tool=card.dataset.tool;const out=document.getElementById("toolOutput");out.style.display="block";function urlToolMarkup(title,ph){return`<label>${title}</label><div class="input-wrap"><input type="url" id="toolUrl" placeholder="${ph}" /><button class="btn" id="toolRun">Run</button></div><div id="toolResult" style="margin-top:14px;font-family:var(--font-mono);font-size:.85rem"></div>`}function wireUrlTool(fn){document.getElementById("toolRun").onclick=()=>{const u=normalizeUrl(document.getElementById("toolUrl").value);if(!u){toast("Enter a valid URL");return}document.getElementById("toolResult").innerHTML=fn(u)}}if(tool==="ip"){out.innerHTML=urlToolMarkup("IP Address Check","http://192.168.1.1");wireUrlTool(u=>{const host=u.hostname;return`Host: ${host}<br>Result: ${isIpAddress(host)?'<span style="color:#ff2d3a">Raw IP address detected</span>':'<span style="color:#31d67c">Named domain</span>'}`})}else if(tool==="keywords"){out.innerHTML=urlToolMarkup("Keyword Scanner","https://verify-account-now.com");wireUrlTool(u=>{const found=SUSPICIOUS_KEYWORDS.filter(k=>u.href.toLowerCase().includes(k));return`Found ${found.length} trigger word(s)<br>${found.length?found.join(", "):"None"}`})}else if(tool==="tld"){out.innerHTML=urlToolMarkup("TLD Risk Check","https://freegift.xyz");wireUrlTool(u=>{const host=u.hostname.toLowerCase();const hit=SUSPICIOUS_TLDS.find(t=>host.endsWith(t));return`Domain: ${host}<br>Result: ${hit?'<span style="color:#ffb02e">Risky TLD '+hit+'</span>':'<span style="color:#31d67c">Common TLD</span>'}`})}else if(tool==="length"){out.innerHTML=urlToolMarkup("Length Analyzer","https://example.com");wireUrlTool(u=>{const host=u.hostname.toLowerCase();return`Host length: ${host.length} chars<br>Subdomains: ${host.split(".").length-1}<br>${host.length>40?'<span style="color:#ffb02e">Suspiciously long</span>':'<span style="color:#31d67c">Normal length</span>'}`})}else if(tool==="typo"){out.innerHTML=urlToolMarkup("Typosquat Detector","https://paypa1.com");wireUrlTool(u=>{const hostBare=u.hostname.toLowerCase().replace(/^www\./,"").split(".")[0];const{closestBrand,closestDist}=closestBrandMatch(hostBare);const likely=closestDist<=2&&closestBrand&&closestBrand.split(".")[0].length>3;return`Domain: ${u.hostname}<br>Closest brand match: ${closestBrand} (edit distance ${closestDist})<br>${likely?'<span style="color:#ff2d3a">Likely typosquat</span>':'<span style="color:#31d67c">No close match</span>'}`})}else if(tool==="punycode"){out.innerHTML=urlToolMarkup("Punycode Revealer","https://xn--pple-43d.com");wireUrlTool(u=>{const host=u.hostname.toLowerCase();const isPuny=host.includes("xn--");return`Host: ${host}<br>Result: ${isPuny?'<span style="color:#ff2d3a">Punycode detected — may visually mimic a trusted brand</span>':'<span style="color:#31d67c">No punycode encoding found</span>'}`})}})});
+const aiMsgs=document.getElementById("aiMsgs");const aiInput=document.getElementById("aiInput");const aiSendBtn=document.getElementById("aiSendBtn");
+function renderMarkdownLite(text){const esc=text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");const lines=esc.split("\n");let html="";let inList=false;for(const line of lines){const trimmed=line.trim();if(/^[-*]\s+/.test(trimmed)){if(!inList){html+="<ul>";inList=true}html+="<li>"+trimmed.replace(/^[-*]\s+/,"")+"</li>"}else{if(inList){html+="</ul>";inList=false}if(trimmed)html+="<p>"+trimmed+"</p>"}}if(inList)html+="</ul>";html=html.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/`(.+?)`/g,"<code>$1</code>");return html||"<p></p>"}
+function addMsg(role,text){const div=document.createElement("div");div.className="msg "+(role==="user"?"user":"ai");if(role!=="user"){const tag=document.createElement("span");tag.className="tag";tag.textContent="Analyst";div.appendChild(tag);const body=document.createElement("div");body.innerHTML=renderMarkdownLite(text);div.appendChild(body)}else{div.textContent=text}aiMsgs.appendChild(div);aiMsgs.scrollTop=aiMsgs.scrollHeight}
+function showTyping(){const div=document.createElement("div");div.className="ai-typing";div.id="aiTyping";div.innerHTML="<span></span><span></span><span></span>";aiMsgs.appendChild(div);aiMsgs.scrollTop=aiMsgs.scrollHeight}
+function hideTyping(){const t=document.getElementById("aiTyping");if(t)t.remove()}
+function localAnalyze(text){const t=text.toLowerCase();if(/package|parcel|delivery|could not be delivered|confirm your address/.test(t))return`**Likely Scam** — classic package / delivery pattern\n\n- Unexpected "delivery failed" or "confirm address" message\n- Shortened or unfamiliar link\n- Pressure to act fast or pay a fee\n\nDo not click the link. Check tracking only on the carrier's official site, typed in yourself.`;if(/bank|verify.*(account|identity)|otp|one.?time.?password|card.*(block|fraud)/.test(t))return`**Likely Scam** — bank / account impersonation pattern\n\n- Banks never ask for OTPs, PINs, or full card numbers by call or text\n- Urgency and threats of account loss are a hallmark\n\nHang up. Call your bank using the number on the back of your card, not one from the message.`;if(/crypto|nft|airdrop|wallet|seed.?phrase|metamask|connect.?wallet/.test(t))return`**Likely Scam** — crypto / airdrop pattern\n\n- Never share a seed phrase or private key with anyone or any site\n- Real airdrops never require your seed phrase\n\nIf you already connected a wallet to a suspicious site, move funds to a new wallet and revoke approvals.`;if(/gift.?card|wire.?transfer|western.?union|pay.*(fee|tax|release)/.test(t))return`**Likely Scam** — payment / gift-card demand\n\nLegitimate organizations never ask for gift cards, crypto, or wire transfers to release a package, clear a tax, or unlock an account.\n\nRefuse the request and report the contact.`;if(/romance|guaranteed.*(return|profit)|work.?from.?home.*fee/.test(t))return`**Suspicious** — high risk of long-con fraud\n\n- Emotional pressure or guaranteed returns\n- Requests for money or crypto from someone you only know online\n\nNever send money to someone you haven't met in person, regardless of the story.`;const urlMatch=text.match(/https?:\/\/[^\s<>"']+/i)||text.match(/(?:^|\s)([a-z0-9][-a-z0-9.]*\.[a-z]{2,}(?:\/[^\s]*)?)/i);if(urlMatch){const uri=normalizeUrl(urlMatch[0].trim());if(uri){const h=runHeuristics(uri);const level=levelFor(h.score);const verdict=level==="dangerous"?"High Risk":level==="suspicious"?"Suspicious":"Looks relatively clean";const flagText=h.flags.length?h.flags.map(f=>"- "+f.text).join("\n"):"No strong heuristic flags";return`${verdict} (local score ${h.score}/100)\n\nDomain: ${uri.hostname}\n\nSignals:\n${flagText}\n\nPrefer typing known sites yourself instead of clicking. Use the Scan tab for live blacklist status.`}}return`I can help assess scam risk from messages, links, or what happened.\n\nPaste the full text of an SMS/email, a link, or describe the call — I'll give a straight verdict.\n\nNever share passwords, 2FA codes, or seed phrases with anyone, including this tool.`}
+async function sendAiMessage(overrideText){const text=(overrideText!==undefined?overrideText:aiInput.value).trim();if(!text)return;addMsg("user",text);if(overrideText===undefined)aiInput.value="";aiSendBtn.disabled=true;showTyping();await sleep(400+Math.random()*300);hideTyping();const reply=localAnalyze(text);addMsg("ai",reply);aiSendBtn.disabled=false}
 aiSendBtn.addEventListener("click",()=>sendAiMessage());
-aiInput.addEventListener("keydown",e=>{
-  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendAiMessage(); }
-});
-document.querySelectorAll(".chip").forEach(chip=>{
-  chip.addEventListener("click",()=>sendAiMessage(chip.dataset.prompt));
-});
-let currentImageFile=null;
-let lastImageText="";
+aiInput.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendAiMessage()}});
+document.querySelectorAll(".chip").forEach(chip=>chip.addEventListener("click",()=>sendAiMessage(chip.dataset.prompt)));
+let currentImageFile=null,lastImageText="";
 const imageInput=document.getElementById("imageInput");
-const imagePickBtn=document.getElementById("imagePickBtn");
-const imageClearBtn=document.getElementById("imageClearBtn");
-const imageHint=document.getElementById("imageHint");
-const imagePreviewWrap=document.getElementById("imagePreviewWrap");
-const imagePreview=document.getElementById("imagePreview");
-const imageScanBtn=document.getElementById("imageScanBtn");
-const imageResult=document.getElementById("imageResult");
-const imageSeq=document.getElementById("imageSeq");
-imagePickBtn.addEventListener("click",()=>imageInput.click());
-imageInput.addEventListener("change",()=>{
-  const file=imageInput.files?.[0];
-  if(!file) return;
-  if(!file.type.startsWith("image/")){
-    toast("Please select an image file");
-    imageInput.value="";
+document.getElementById("imagePickBtn").addEventListener("click",()=>imageInput.click());
+imageInput.addEventListener("change",()=>{const file=imageInput.files?.[0];if(!file||!file.type.startsWith("image/")){toast("Please select an image file");return}currentImageFile=file;document.getElementById("imageHint").textContent="Selected: "+file.name;document.getElementById("imageClearBtn").style.display="inline-block";document.getElementById("imageScanBtn").disabled=false;const reader=new FileReader();reader.onload=()=>{document.getElementById("imagePreview").src=reader.result;document.getElementById("imagePreviewWrap").style.display="block"};reader.readAsDataURL(file)});
+document.getElementById("imageClearBtn").addEventListener("click",()=>{currentImageFile=null;imageInput.value="";document.getElementById("imageHint").textContent="JPEG, PNG, WebP, GIF — processed locally";document.getElementById("imagePreviewWrap").style.display="none";document.getElementById("imageClearBtn").style.display="none";document.getElementById("imageScanBtn").disabled=true;document.getElementById("imageResult").style.display="none"});
+async function runImageScanSequence(promise){const steps=[...document.querySelectorAll("#imageSeq .seq-step")];document.getElementById("imageSeq").classList.add("visible");steps.forEach(s=>s.classList.remove("active","done"));let i=0;const stepDelay=320;const timer=setInterval(()=>{if(i>0){steps[i-1].classList.remove("active");steps[i-1].classList.add("done")}if(i<steps.length){steps[i].classList.add("active");i++}else clearInterval(timer)},stepDelay);const minWait=sleep(stepDelay*steps.length+200);const[result]=await Promise.all([promise,minWait]);clearInterval(timer);steps.forEach(s=>{s.classList.remove("active");s.classList.add("done")});await sleep(180);document.getElementById("imageSeq").classList.remove("visible");return result}
+document.getElementById("imageScanBtn").addEventListener("click",async()=>{if(!currentImageFile)return;document.getElementById("imageScanBtn").disabled=true;document.getElementById("imageResult").style.display="none";try{const{data:{text}}=await runImageScanSequence(Tesseract.recognize(currentImageFile,"eng",{}));const cleaned=(text||"").replace(/\s+/g," ").trim();lastImageText=cleaned;if(!cleaned||cleaned.length<8){toast("Could not extract readable text from this image");document.getElementById("imageScanBtn").disabled=false;return}const reply=localAnalyze(cleaned);let score=15,level="safe",verdictText="Looks relatively clean",sub="No strong scam patterns detected in the extracted text";if(/likely scam|high risk|known scam/i.test(reply)){score=88;level="dangerous";verdictText="High Risk / Likely Scam";sub="Strong phishing or social-engineering signals found"}else if(/suspicious|warning|be careful|high risk of scam/i.test(reply)){score=48;level="suspicious";verdictText="Suspicious";sub="Some warning signs present — verify carefully"}document.getElementById("imageExtractedText").textContent=cleaned;document.getElementById("imageVerdict").className="verdict "+level;document.getElementById("imageVerdictText").textContent=verdictText;document.getElementById("imageVerdictSub").textContent=sub;document.getElementById("imageScoreNum").textContent=score;document.getElementById("imageScoreRing").style.background=`conic-gradient(var(--accent) ${score}%, var(--line) 0)`;const flagsList=document.getElementById("imageFlagsList");const flagsSection=document.getElementById("imageFlagsSection");flagsList.innerHTML="";const lines=reply.split("\n").filter(l=>l.trim().startsWith("-")||l.trim().startsWith("•"));if(lines.length){flagsSection.style.display="block";lines.slice(0,6).forEach(line=>{const li=document.createElement("li");if(/do not|never|refuse|high risk|scam/i.test(line))li.className="danger";li.innerHTML=`<span class="dot"></span><span>${line.replace(/^[-•]\s*/,"")}</span>`;flagsList.appendChild(li)})}else flagsSection.style.display="none";document.getElementById("imageResult").style.display="block";saveHistory({url:"[Image] "+(currentImageFile.name||"screenshot"),level,score,ts:Date.now()});renderHistory();toast("Image analyzed","safe")}catch(err){console.error(err);toast("OCR failed — try a clearer screenshot")}finally{document.getElementById("imageScanBtn").disabled=false}});
+document.getElementById("imageAskAiBtn")?.addEventListener("click",()=>{if(!lastImageText)return;document.querySelector('[data-tab="ai"]').click();sendAiMessage("I scanned this image of a possible scam/phishing message. Here's the extracted text — give me a full analysis and what I should do:\n\n"+lastImageText)});
+document.getElementById("imageCopyTextBtn")?.addEventListener("click",()=>{if(!lastImageText)return;navigator.clipboard.writeText(lastImageText).then(()=>toast("Extracted text copied","safe")).catch(()=>toast("Copy failed"))});
+function applyBg(dataUrl,name){
+  if(!dataUrl){
+    document.body.classList.remove("has-bg-image");
+    document.body.style.backgroundImage="";
+    document.getElementById("bgHint").textContent="No custom background";
+    lsDel("sg_bg");
+    lsDel("sg_bg_name");
     return;
   }
-  currentImageFile=file;
-  imageHint.textContent="Selected: "+file.name;
-  imageClearBtn.style.display="inline-block";
-  imageScanBtn.disabled=false;
+  document.body.style.backgroundImage="url("+dataUrl+")";
+  document.body.classList.add("has-bg-image");
+  document.getElementById("bgHint").textContent="Active: "+(name||"custom image");
+  try{lsSet("sg_bg",dataUrl);lsSet("sg_bg_name",name||"custom")}catch(e){}
+}
+const bgInput=document.getElementById("bgInput");
+document.getElementById("bgPickBtn").addEventListener("click",()=>bgInput.click());
+bgInput.addEventListener("change",()=>{
+  const file=bgInput.files?.[0];
+  if(!file||!file.type.startsWith("image/")){toast("Please select an image file");return}
   const reader=new FileReader();
-  reader.onload=()=>{
-    imagePreview.src=reader.result;
-    imagePreviewWrap.style.display="block";
-  };
+  reader.onload=()=>{applyBg(reader.result,file.name);toast("Background applied","safe")};
+  reader.onerror=()=>toast("Failed to read image");
   reader.readAsDataURL(file);
 });
-imageClearBtn.addEventListener("click",()=>{
-  currentImageFile=null;
-  imageInput.value="";
-  imageHint.textContent="JPEG, PNG, WebP, GIF — processed locally";
-  imagePreviewWrap.style.display="none";
-  imageClearBtn.style.display="none";
-  imageScanBtn.disabled=true;
-  imageResult.style.display="none";
-  imageSeq.classList.remove("visible");
+document.getElementById("bgClearBtn").addEventListener("click",()=>{
+  bgInput.value="";
+  applyBg(null);
+  toast("Background cleared","safe");
 });
-async function runImageScanSequence(promise){
-  const steps=[...imageSeq.querySelectorAll(".seq-step")];
-  imageSeq.classList.add("visible");
-  steps.forEach(s=>s.classList.remove("active","done"));
-  let i=0;
-  const stepDelay=320;
-  const timer=setInterval(()=>{
-    if(i>0){
-      steps[i-1].classList.remove("active");
-      steps[i-1].classList.add("done");
-    }
-    if(i<steps.length){
-      steps[i].classList.add("active");
-      i++;
-    } else clearInterval(timer);
-  },stepDelay);
-  const minWait=sleep(stepDelay*steps.length+200);
-  const [result]=await Promise.all([promise,minWait]);
-  clearInterval(timer);
-  steps.forEach(s=>{ s.classList.remove("active"); s.classList.add("done"); });
-  await sleep(180);
-  imageSeq.classList.remove("visible");
-  return result;
-}
-imageScanBtn.addEventListener("click",async ()=>{
-  if(!currentImageFile) return;
-  imageScanBtn.disabled=true;
-  imageResult.style.display="none";
-  try{
-    const {data:{text}}=await runImageScanSequence(
-      Tesseract.recognize(currentImageFile,"eng",{})
-    );
-    const cleaned=(text||"").replace(/\s+/g," ").trim();
-    lastImageText=cleaned;
-    if(!cleaned||cleaned.length<8){
-      toast("Could not extract readable text from this image");
-      imageScanBtn.disabled=false;
-      return;
-    }
-    const reply=localAnalyze(cleaned);
-    let score=15;
-    let level="safe";
-    let verdictText="Looks relatively clean";
-    let sub="No strong scam patterns detected in the extracted text";
-    if(/likely scam|high risk|known scam/i.test(reply)){
-      score=88;
-      level="dangerous";
-      verdictText="High Risk / Likely Scam";
-      sub="Strong phishing or social-engineering signals found";
-    } else if(/suspicious|warning|be careful|high risk of scam/i.test(reply)){
-      score=48;
-      level="suspicious";
-      verdictText="Suspicious";
-      sub="Some warning signs present — verify carefully";
-    }
-    document.getElementById("imageExtractedText").textContent=cleaned;
-    const verdictEl=document.getElementById("imageVerdict");
-    verdictEl.className="verdict "+level;
-    document.getElementById("imageVerdictText").textContent=verdictText;
-    document.getElementById("imageVerdictSub").textContent=sub;
-    document.getElementById("imageScoreNum").textContent=score;
-    document.getElementById("imageScoreRing").style.background=`conic-gradient(var(--accent) ${score}%, var(--line) 0)`;
-    const flagsList=document.getElementById("imageFlagsList");
-    const flagsSection=document.getElementById("imageFlagsSection");
-    flagsList.innerHTML="";
-    const lines=reply.split("\n").filter(l=>l.trim().startsWith("-")||l.trim().startsWith("•"));
-    if(lines.length){
-      flagsSection.style.display="block";
-      lines.slice(0,6).forEach(line=>{
-        const li=document.createElement("li");
-        if(/do not|never|refuse|high risk|scam/i.test(line)) li.className="danger";
-        li.innerHTML=`<span class="dot"></span><span>${line.replace(/^[-•]\s*/,"")}</span>`;
-        flagsList.appendChild(li);
-      });
-    } else {
-      flagsSection.style.display="none";
-    }
-    imageResult.style.display="block";
-    imageResult.classList.add("visible");
-    saveHistory({
-      url:"[Image] "+(currentImageFile.name||"screenshot"),
-      level,
-      score,
-      ts:Date.now()
-    });
-    toast("Image analyzed","safe");
-  } catch(err){
-    console.error(err);
-    toast("OCR failed — try a clearer screenshot");
-  } finally {
-    imageScanBtn.disabled=false;
-  }
-});
-document.getElementById("imageAskAiBtn")?.addEventListener("click",()=>{
-  if(!lastImageText) return;
-  goToTab("ai");
-  sendAiMessage("I scanned this image of a possible scam/phishing message. Here's the extracted text — give me a full analysis and what I should do:\n\n"+lastImageText);
-});
-document.getElementById("imageCopyTextBtn")?.addEventListener("click",()=>{
-  if(!lastImageText) return;
-  navigator.clipboard.writeText(lastImageText)
-    .then(()=>toast("Extracted text copied","safe"))
-    .catch(()=>toast("Copy failed"));
-});
+(function restoreBg(){
+  const data=lsGet("sg_bg");
+  const name=lsGet("sg_bg_name");
+  if(data)applyBg(data,name);
+})();
 buildThemeGrid();
-applyTheme("crimson");
+loadHistory();
 </script>
 </body>
 </html>
