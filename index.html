@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
   :root{
     --black:#050506;
@@ -65,10 +64,7 @@
   }
   .glow{position:fixed;top:-14%;left:66%;width:900px;height:560px;transform:translateX(-50%);
     background:radial-gradient(ellipse,var(--accent-glow) 0%,transparent 68%);pointer-events:none;z-index:0;transition:background .3s}
-
-
   .shell{position:relative;z-index:1;display:flex;min-height:100vh}
-
   .rail{
     width:var(--rail-w);flex-shrink:0;display:flex;flex-direction:column;align-items:center;
     padding:22px 0 16px;border-right:1px solid var(--line);background:var(--black2);
@@ -83,7 +79,6 @@
   .rail-mark svg{width:20px;height:20px}
   .rail-mark::after{content:'';position:absolute;inset:-6px;border-radius:15px;border:1px solid var(--accent-glow-soft);animation:pulse-ring 2.6s ease-out infinite}
   @keyframes pulse-ring{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.55);opacity:0}}
-
   .rail-nav{display:flex;flex-direction:column;gap:5px;flex:1;overflow-y:auto}
   .rail-btn{
     width:56px;height:52px;border:1px solid transparent;background:transparent;border-radius:13px;
@@ -94,7 +89,6 @@
   .rail-btn span{font-size:.58rem;font-weight:600;letter-spacing:.02em}
   .rail-btn:hover{color:var(--text);background:var(--panel-hover)}
   .rail-btn.active{color:#fff;background:linear-gradient(155deg,var(--accent),var(--accent-deep));box-shadow:0 4px 16px var(--accent-glow)}
-
   .rail-stats{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--font-mono)}
   .rail-stats .n{font-size:1.05rem;font-weight:700;color:var(--text)}
   .rail-stats .l{font-size:.55rem;color:var(--muted-dim);text-transform:uppercase;letter-spacing:.06em}
@@ -104,15 +98,12 @@
   .rail-social a{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid transparent;transition:.15s;text-decoration:none;cursor:pointer;pointer-events:auto}
   .rail-social a:hover{color:var(--text);background:var(--panel-hover);border-color:var(--line-light)}
   .rail-social a svg{width:26px;height:26px;pointer-events:none}
-
   .main{flex:1;min-width:0;padding:38px 40px 100px;max-width:920px;margin:0 auto;width:100%}
-
   .topline{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px}
   .topline h1{font-family:var(--font-display);font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
   .status-line{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
   .status-dot{width:6px;height:6px;border-radius:50%;background:var(--safe);box-shadow:0 0 8px var(--safe);animation:blink 2s ease-in-out infinite}
   .lede{color:var(--muted);font-size:.92rem;max-width:520px;margin:6px 0 26px}
-
   .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
   .stat-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px}
   .stat-box .n{font-family:var(--font-mono);font-size:1.3rem;font-weight:700}
@@ -120,21 +111,17 @@
   .stat-box.safe .n{color:var(--safe)}
   .stat-box.suspicious .n{color:var(--warn)}
   .stat-box.dangerous .n{color:var(--danger)}
-
   .panel{display:none;animation:fadein .28s ease}
   .panel.active{display:block}
   @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
   .hud{position:relative}
   .hud-corner{position:absolute;width:14px;height:14px;pointer-events:none;opacity:.55}
   .hud-corner.tl{top:-1px;left:-1px;border-top:2px solid var(--accent);border-left:2px solid var(--accent);border-radius:4px 0 0 0}
   .hud-corner.tr{top:-1px;right:-1px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);border-radius:0 4px 0 0}
   .hud-corner.bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--accent);border-left:2px solid var(--accent);border-radius:0 0 0 4px}
   .hud-corner.br{bottom:-1px;right:-1px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent);border-radius:0 0 4px 0}
-
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:calc(24px*var(--pad-scale));margin-bottom:16px;transition:border-color .2s,padding .2s}
   .card:hover{border-color:var(--line-light)}
-
   label{display:block;font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:9px;text-transform:uppercase;letter-spacing:.07em;font-family:var(--font-mono)}
   .input-wrap{display:flex;gap:10px}
   input[type="url"],input[type="text"],input[type="password"],textarea{
@@ -147,7 +134,6 @@
   textarea{min-height:110px;resize:vertical;font-family:var(--font-body)}
   .hint{font-size:.72rem;color:var(--muted-dim);margin-top:9px;font-family:var(--font-mono)}
   kbd{background:var(--black3);border:1px solid var(--line-light);border-radius:4px;padding:1px 6px;font-family:var(--font-mono);font-size:.68rem}
-
   .btn{background:linear-gradient(145deg,var(--accent),var(--accent-deep));color:#fff;border:none;border-radius:var(--r-sm);
     padding:14px 22px;font-family:var(--font-body);font-size:.87rem;font-weight:700;cursor:pointer;white-space:nowrap;
     transition:transform .15s,box-shadow .15s,opacity .15s;box-shadow:0 4px 16px var(--accent-glow)}
@@ -156,7 +142,6 @@
   .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
   .btn-ghost{background:transparent;border:1px solid var(--line-light);color:var(--muted);box-shadow:none;padding:10px 16px;font-size:.78rem}
   .btn-ghost:hover{border-color:var(--accent);color:var(--text);box-shadow:none;transform:none}
-
   .seq{display:none;padding:6px 2px}
   .seq.visible{display:block}
   .seq-step{display:flex;align-items:center;gap:12px;padding:9px 0;font-family:var(--font-mono);font-size:.82rem;color:var(--muted-dim);transition:color .2s}
@@ -167,21 +152,17 @@
   .seq-step.done{color:var(--muted)}
   .seq-step.done .ring{border-color:var(--safe);background:var(--safe)}
   .seq-step.done .ring::before{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--black);border-width:0 2px 2px 0;transform:rotate(45deg)}
-
   .result{display:none}
   .result.visible{display:block}
-
   .verdict{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:var(--r-md);margin-bottom:22px;font-weight:700;font-size:1.12rem}
   .verdict.safe{background:rgba(49,214,124,.1);border:1px solid rgba(49,214,124,.28);color:var(--safe)}
   .verdict.suspicious{background:rgba(255,176,46,.1);border:1px solid rgba(255,176,46,.28);color:var(--warn)}
   .verdict.dangerous{background:var(--accent-glow-soft);border:1px solid rgba(255,45,58,.4);color:#ff6b74}
-
   .score-ring{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;
     font-weight:800;font-family:var(--font-mono);font-size:1.05rem;flex-shrink:0;
     background:conic-gradient(var(--accent) 0%,var(--line) 0);position:relative;transition:background 1s ease}
   .score-ring::before{content:'';position:absolute;inset:5px;background:var(--panel);border-radius:50%}
   .score-ring span{position:relative;z-index:1}
-
   .breakdown{margin-bottom:22px}
   .breakdown h3,.flags-section h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:12px;font-family:var(--font-mono)}
   .bd-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
@@ -189,17 +170,14 @@
   .bd-track{flex:1;height:7px;background:var(--black2);border:1px solid var(--line);border-radius:4px;overflow:hidden}
   .bd-fill{height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:width 1s cubic-bezier(.2,.8,.2,1)}
   .bd-val{width:34px;text-align:right;font-family:var(--font-mono);font-size:.75rem;color:var(--muted);flex-shrink:0}
-
   .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
   .meta-item{background:var(--black2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px}
   .meta-item .lbl{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-family:var(--font-mono)}
   .meta-item .val{font-size:.87rem;font-weight:600;word-break:break-all;font-family:var(--font-mono)}
-
   .flags{list-style:none;display:flex;flex-direction:column;gap:7px}
   .flags li{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--black2);border-radius:var(--r-sm);font-size:.85rem;border-left:3px solid var(--warn)}
   .flags li.danger{border-left-color:var(--accent)}
   .flags li .dot{width:6px;height:6px;border-radius:50%;background:currentColor;margin-top:6px;flex-shrink:0}
-
   .history-list{display:flex;flex-direction:column;gap:8px}
   .history-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--black2);border:1px solid var(--line);border-radius:var(--r-sm);cursor:pointer;transition:border-color .15s;gap:12px}
   .history-item:hover{border-color:var(--accent-deep)}
@@ -208,9 +186,7 @@
   .badge.safe{background:rgba(49,214,124,.14);color:var(--safe)}
   .badge.suspicious{background:rgba(255,176,46,.14);color:var(--warn)}
   .badge.dangerous{background:var(--accent-glow-soft);color:#ff6b74}
-
   .empty{text-align:center;padding:30px;color:var(--muted);font-size:.88rem}
-
   .tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
   .tool-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;cursor:pointer;transition:.2s;text-align:left}
   .tool-card:hover{border-color:var(--accent-deep);background:var(--panel-hover);transform:translateY(-2px)}
@@ -218,13 +194,10 @@
   .tool-card .icon{font-size:1.3rem;margin-bottom:8px}
   .tool-card h4{font-size:.87rem;font-weight:700;margin-bottom:4px}
   .tool-card p{font-size:.74rem;color:var(--muted)}
-
   .extracted-links{display:flex;flex-direction:column;gap:8px;margin-top:12px}
   .extracted-link{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--black2);border-radius:var(--r-sm);font-size:.82rem;font-family:var(--font-mono)}
   .extracted-link span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
   .actions{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
-
   .ai-shell{display:flex;flex-direction:column;height:560px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
   .ai-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--black2)}
   .ai-head .pip{width:8px;height:8px;border-radius:50%;background:var(--safe);box-shadow:0 0 8px var(--safe);animation:blink 2s ease-in-out infinite}
@@ -250,8 +223,6 @@
   .ai-suggest{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}
   .chip{font-family:var(--font-mono);font-size:.72rem;background:var(--black2);border:1px solid var(--line);color:var(--muted);padding:6px 11px;border-radius:20px;cursor:pointer;transition:.15s}
   .chip:hover{border-color:var(--accent);color:var(--text)}
-
-
   .theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:6px}
   .theme-swatch{border:1px solid var(--line);border-radius:var(--r-md);padding:12px 8px;cursor:pointer;text-align:center;background:var(--black2);transition:.15s}
   .theme-swatch:hover{border-color:var(--line-light)}
@@ -270,7 +241,6 @@
   .switch input:checked + .switch-track::before{transform:translateX(18px)}
   .slider-row{padding:12px 0}
   input[type="range"]{width:100%;accent-color:var(--accent);background:transparent;height:20px}
-
   .toast-stack{position:fixed;bottom:22px;right:22px;z-index:50;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
   .toast{background:var(--panel);border:1px solid var(--line-light);border-left:3px solid var(--accent);border-radius:var(--r-sm);
     padding:11px 16px;font-size:.83rem;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:280px;
@@ -279,11 +249,9 @@
   @keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .toast.fade-out{animation:toast-out .25s ease forwards}
   @keyframes toast-out{to{opacity:0;transform:translateY(8px)}}
-
   footer{text-align:center;margin-top:36px;font-size:.72rem;color:var(--muted-dim)}
   footer a{color:var(--accent);text-decoration:none}
   footer a:hover{text-decoration:underline}
-
   @media (max-width:860px){
     .shell{flex-direction:column}
     .rail{width:100%;height:auto;position:sticky;top:0;flex-direction:row;padding:12px 14px;gap:14px;z-index:5;border-right:none;border-bottom:1px solid var(--line)}
@@ -306,7 +274,6 @@
     .toast-stack{left:16px;right:16px;bottom:16px;align-items:stretch}
     .toast{max-width:none}
   }
-
   body.light{
     --black:#f3f1ec; --black2:#ffffff; --black3:#ebe8e1;
     --panel:#ffffff; --panel-hover:#f6f4ef;
@@ -321,7 +288,6 @@
 <div class="glow"></div>
 <div class="toast-stack" id="toastStack"></div>
 <div class="shell">
-
   <nav class="rail" id="rail">
     <div class="rail-mark">
       <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 5.5V11c0 5.2 3.4 9.9 8 11 4.6-1.1 8-5.8 8-11V5.5L12 2z" fill="#fff"/><path d="M9.5 12l1.8 1.8L14.8 10" stroke="#9c0f1c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -334,6 +300,10 @@
       <button class="rail-btn" data-tab="extract" title="Extract">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg>
         <span>Extract</span>
+      </button>
+      <button class="rail-btn" data-tab="image" title="Image Scan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span>Image</span>
       </button>
       <button class="rail-btn" data-tab="ai" title="AI Analyst">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -366,23 +336,19 @@
       <span class="l">Scans</span>
     </div>
   </nav>
-
   <main class="main">
-
     <div class="panel active" id="panel-check">
       <div class="topline">
         <h1>Scan Console</h1>
         <span class="status-line"><span class="status-dot"></span>Analyst online · 24/7</span>
       </div>
       <p class="lede">Paste any link. Blacklist cross-reference, structural heuristics, and brand-similarity scoring run in one pass.</p>
-
       <div class="stat-strip">
         <div class="stat-box"><div class="n" id="statTotal">0</div><div class="l">Total Scanned</div></div>
         <div class="stat-box safe"><div class="n" id="statSafe">0</div><div class="l">Clean</div></div>
         <div class="stat-box suspicious"><div class="n" id="statSuspicious">0</div><div class="l">Suspicious</div></div>
         <div class="stat-box dangerous"><div class="n" id="statDangerous">0</div><div class="l">Dangerous</div></div>
       </div>
-
       <div class="card hud">
         <span class="hud-corner tl"></span><span class="hud-corner tr"></span><span class="hud-corner bl"></span><span class="hud-corner br"></span>
         <label for="urlInput">Target URL</label>
@@ -391,7 +357,6 @@
           <button class="btn" id="checkBtn">Scan</button>
         </div>
         <div class="hint">Press <kbd>/</kbd> to focus · <kbd>Enter</kbd> to scan</div>
-
         <div class="seq" id="seq">
           <div class="seq-step" data-step="0"><span class="ring"></span>Resolving target domain</div>
           <div class="seq-step" data-step="1"><span class="ring"></span>Cross-referencing threat blacklist</div>
@@ -400,7 +365,6 @@
           <div class="seq-step" data-step="4"><span class="ring"></span>Compiling verdict</div>
         </div>
       </div>
-
       <div class="card result hud" id="result">
         <span class="hud-corner tl"></span><span class="hud-corner tr"></span><span class="hud-corner bl"></span><span class="hud-corner br"></span>
         <div class="verdict" id="verdict">
@@ -410,7 +374,6 @@
             <div style="font-size:.79rem;font-weight:500;opacity:.7;margin-top:2px" id="verdictSub"></div>
           </div>
         </div>
-
         <div class="breakdown">
           <h3>Risk Breakdown</h3>
           <div class="bd-row"><div class="bd-label">Domain Trust</div><div class="bd-track"><div class="bd-fill" id="bdDomain"></div></div><div class="bd-val" id="bdDomainVal">0</div></div>
@@ -418,19 +381,16 @@
           <div class="bd-row"><div class="bd-label">Content Signals</div><div class="bd-track"><div class="bd-fill" id="bdContent"></div></div><div class="bd-val" id="bdContentVal">0</div></div>
           <div class="bd-row"><div class="bd-label">Brand Similarity</div><div class="bd-track"><div class="bd-fill" id="bdBrand"></div></div><div class="bd-val" id="bdBrandVal">0</div></div>
         </div>
-
         <div class="meta-grid">
           <div class="meta-item"><div class="lbl">Domain</div><div class="val" id="domainValue">—</div></div>
           <div class="meta-item"><div class="lbl">Blacklist</div><div class="val" id="gacsValue">—</div></div>
           <div class="meta-item"><div class="lbl">Protocol</div><div class="val" id="protoValue">—</div></div>
           <div class="meta-item"><div class="lbl">Risk Score</div><div class="val" id="scoreValue">—</div></div>
         </div>
-
         <div class="flags-section" id="flagsSection" style="display:none;margin-bottom:4px">
           <h3>Detected Signals</h3>
           <ul class="flags" id="flagsList"></ul>
         </div>
-
         <div class="actions">
           <button class="btn btn-ghost" id="copyBtn">Copy Result</button>
           <button class="btn btn-ghost" id="askAiBtn">Ask AI Analyst</button>
@@ -438,7 +398,6 @@
         </div>
       </div>
     </div>
-
     <div class="panel" id="panel-extract">
       <div class="topline"><h1>Link Extractor</h1></div>
       <p class="lede">Paste a full message or email. Every URL inside gets pulled out and queued for scanning.</p>
@@ -449,7 +408,56 @@
         <div class="extracted-links" id="extractedLinks"></div>
       </div>
     </div>
-
+    <div class="panel" id="panel-image">
+      <div class="topline"><h1>Image Scanner</h1></div>
+      <p class="lede">Upload a screenshot of a text, email, caller ID, or phishing page. OCR runs entirely in your browser, then the text is analyzed for scam signals.</p>
+      <div class="card hud">
+        <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+        <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+        <label>Screenshot / Image</label>
+        <input type="file" id="imageInput" accept="image/*" style="display:none"/>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+          <button class="btn" id="imagePickBtn">Choose Image</button>
+          <button class="btn btn-ghost" id="imageClearBtn" style="display:none">Clear</button>
+        </div>
+        <div class="hint" id="imageHint">JPEG, PNG, WebP, GIF — processed locally</div>
+        <div id="imagePreviewWrap" style="display:none;margin:16px 0">
+          <img id="imagePreview" style="max-width:100%;max-height:220px;border-radius:8px;border:1px solid var(--line)"/>
+        </div>
+        <div class="seq" id="imageSeq">
+          <div class="seq-step" data-step="0"><span class="ring"></span>Loading image</div>
+          <div class="seq-step" data-step="1"><span class="ring"></span>Running OCR (Tesseract)</div>
+          <div class="seq-step" data-step="2"><span class="ring"></span>Extracting text</div>
+          <div class="seq-step" data-step="3"><span class="ring"></span>Analyzing for scam signals</div>
+        </div>
+        <div style="margin-top:14px">
+          <button class="btn" id="imageScanBtn" disabled>Scan Image</button>
+        </div>
+      </div>
+      <div class="card result hud" id="imageResult" style="display:none">
+        <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+        <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+        <div class="verdict" id="imageVerdict">
+          <div class="score-ring" id="imageScoreRing"><span id="imageScoreNum">0</span></div>
+          <div>
+            <div id="imageVerdictText">—</div>
+            <div style="font-size:.79rem;font-weight:500;opacity:.7;margin-top:2px" id="imageVerdictSub"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:18px">
+          <h3 style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;font-family:var(--font-mono)">Extracted Text</h3>
+          <pre id="imageExtractedText" style="background:var(--black2);border:1px solid var(--line);border-radius:8px;padding:14px;font-family:var(--font-mono);font-size:.82rem;white-space:pre-wrap;max-height:180px;overflow:auto;color:var(--text)"></pre>
+        </div>
+        <div class="flags-section" id="imageFlagsSection" style="display:none;margin-bottom:16px">
+          <h3>Detected Signals</h3>
+          <ul class="flags" id="imageFlagsList"></ul>
+        </div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="imageAskAiBtn">Ask AI Analyst</button>
+          <button class="btn btn-ghost" id="imageCopyTextBtn">Copy Extracted Text</button>
+        </div>
+      </div>
+    </div>
     <div class="panel" id="panel-ai">
       <div class="topline"><h1>AI Analyst</h1></div>
       <p class="lede">Paste a message, link, or describe what happened — get a straight read on whether it's a scam.</p>
@@ -474,7 +482,6 @@
         </div>
       </div>
     </div>
-
     <div class="panel" id="panel-tools">
       <div class="topline"><h1>Toolkit</h1></div>
       <p class="lede">Ten offline heuristic tools. Nothing here calls out to a server except the blacklist and AI features.</p>
@@ -492,7 +499,6 @@
       </div>
       <div class="card" id="toolResult" style="display:none"><div id="toolOutput"></div></div>
     </div>
-
     <div class="panel" id="panel-history">
       <div class="topline"><h1>Scan Log</h1></div>
       <p class="lede">Everything scanned this session, most recent first.</p>
@@ -504,16 +510,13 @@
         <div class="history-list" id="historyList"><div class="empty">No scans yet</div></div>
       </div>
     </div>
-
     <div class="panel" id="panel-settings">
       <div class="topline"><h1>Settings</h1></div>
       <p class="lede">Theme, background, density, and detection sensitivity — all local to this session.</p>
-
       <div class="card">
         <label>Theme</label>
         <div class="theme-grid" id="themeGrid"></div>
       </div>
-
       <div class="card">
         <label style="margin-bottom:0">Background</label>
         <div class="setting-row">
@@ -526,7 +529,6 @@
         </div>
         <div class="hint" id="bgImageHint" style="margin-top:10px">No custom background set</div>
       </div>
-
       <div class="card">
         <label style="margin-bottom:0">Display</label>
         <div class="setting-row">
@@ -534,7 +536,6 @@
           <label class="switch"><input type="checkbox" id="compactToggle"><span class="switch-track"></span></label>
         </div>
       </div>
-
       <div class="card">
         <label style="margin-bottom:0">Detection Sensitivity</label>
         <div class="slider-row">
@@ -547,7 +548,6 @@
         </div>
         <div class="hint" style="margin-top:0">Lower thresholds flag more links as risky. Existing results won't re-score automatically.</div>
       </div>
-
       <div class="card">
         <label style="margin-bottom:0">Session Data</label>
         <div class="setting-row">
@@ -556,21 +556,17 @@
         </div>
       </div>
     </div>
-
     <footer>Built-in AI + heuristic scanning · Not 100% accurate · Never share passwords or seed phrases with anyone, including this tool · <a href="https://github.com/zscript084-lgtm" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://www.youtube.com/@scamguardofficial" target="_blank" rel="noopener noreferrer">YouTube</a></footer>
   </main>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
 const SUSPICIOUS_KEYWORDS=["login","signin","sign-in","verify","secure","account","update","confirm","password","wallet","seed","phrase","recovery","unlock","free","gift","prize","claim","reward","bonus","airdrop","support","helpdesk","security","alert","urgent","suspended","bank","paypal","appleid","microsoft","google","facebook","metamask","binance","coinbase","crypto","nft","drop","claim-now","verify-now"];
 const SUSPICIOUS_TLDS=[".tk",".ml",".ga",".cf",".gq",".xyz",".top",".club",".work",".click",".link",".online",".site",".info",".icu",".buzz",".rest",".monster",".sbs"];
 const BRAND_DOMAINS=["paypal.com","apple.com","google.com","microsoft.com","amazon.com","facebook.com","instagram.com","netflix.com","bankofamerica.com","chase.com","wellsfargo.com","coinbase.com","binance.com","metamask.io","dropbox.com","linkedin.com","twitter.com","x.com","irs.gov","usps.com","fedex.com","ups.com","docusign.com"];
-
 let sessionHistory=[];
 let stats={total:0,safe:0,suspicious:0,dangerous:0};
 let THRESH_SUSPICIOUS=25, THRESH_DANGEROUS=55;
-
-
 function toast(msg,type="info"){
   const stack=document.getElementById("toastStack");
   const el=document.createElement("div");
@@ -579,8 +575,6 @@ function toast(msg,type="info"){
   stack.appendChild(el);
   setTimeout(()=>{ el.classList.add("fade-out"); setTimeout(()=>el.remove(),260); },2600);
 }
-
-
 const THEMES={
   crimson:{label:"Crimson",dot:"#ff2d3a",vars:{"--black":"#050506","--black2":"#0a0b0d","--black3":"#0e0f12","--panel":"#111216","--panel-hover":"#16171c","--line":"#221417","--line-light":"#3a2226","--accent":"#ff2d3a","--accent-deep":"#9c0f1c","--accent-glow":"rgba(255,45,58,.26)","--accent-glow-soft":"rgba(255,45,58,.12)","--text":"#f4f3f0","--muted":"#8d8d93","--muted-dim":"#54545a"}},
   cyber:{label:"Cyber Blue",dot:"#2d8fff",vars:{"--black":"#05070a","--black2":"#0a0d12","--black3":"#0e1218","--panel":"#111620","--panel-hover":"#161c28","--line":"#141e2e","--line-light":"#22344a","--accent":"#2d8fff","--accent-deep":"#0f4c9c","--accent-glow":"rgba(45,143,255,.26)","--accent-glow-soft":"rgba(45,143,255,.12)","--text":"#f0f4f8","--muted":"#8a929d","--muted-dim":"#525a63"}},
@@ -611,8 +605,6 @@ function buildThemeGrid(){
     el.addEventListener("click",()=>{ applyTheme(el.dataset.theme); toast(THEMES[el.dataset.theme].label+" theme applied","safe"); });
   });
 }
-
-
 document.querySelectorAll(".rail-btn").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".rail-btn").forEach(b=>b.classList.remove("active"));
@@ -623,7 +615,6 @@ document.querySelectorAll(".rail-btn").forEach(btn=>{
   });
 });
 function goToTab(name){ document.querySelector('[data-tab="'+name+'"]').click(); }
-
 document.addEventListener("keydown",e=>{
   if(e.key==="/" && document.activeElement.tagName!=="INPUT" && document.activeElement.tagName!=="TEXTAREA"){
     e.preventDefault();
@@ -631,8 +622,6 @@ document.addEventListener("keydown",e=>{
     document.getElementById("urlInput").focus();
   }
 });
-
-
 const bgImageInput=document.getElementById("bgImageInput");
 const bgImagePickBtn=document.getElementById("bgImagePickBtn");
 const bgImageClearBtn=document.getElementById("bgImageClearBtn");
@@ -694,8 +683,6 @@ document.getElementById("exportHistoryBtn").addEventListener("click",()=>{
   URL.revokeObjectURL(url);
   toast("History exported","safe");
 });
-
-
 function normalizeUrl(raw){
   let s=(raw||"").trim();
   if(!s) return null;
@@ -723,20 +710,16 @@ function closestBrandMatch(hostBare){
   return {closestBrand,closestDist};
 }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-
 function runHeuristics(urlObj){
   const flags=[];
   const host=urlObj.hostname.toLowerCase();
   const full=urlObj.href.toLowerCase();
   let domainScore=0, structureScore=0, contentScore=0, brandScore=0;
-
   if(isIpAddress(host)){ flags.push({text:"Uses raw IP address instead of domain",level:"danger"}); domainScore+=55; }
   for(const tld of SUSPICIOUS_TLDS){
     if(host.endsWith(tld)){ flags.push({text:"High-abuse TLD detected ("+tld+")",level:"warning"}); domainScore+=30; break; }
   }
   if(host.includes("xn--")){ flags.push({text:"Punycode / IDN domain (possible lookalike)",level:"warning"}); domainScore+=30; }
-
   const parts=host.split(".");
   if(parts.length>=4){ flags.push({text:"Unusually long subdomain chain",level:"warning"}); structureScore+=32; }
   if(host.length>40){ flags.push({text:"Extremely long domain name",level:"warning"}); structureScore+=26; }
@@ -744,24 +727,20 @@ function runHeuristics(urlObj){
   if(urlObj.port && urlObj.port!=="80" && urlObj.port!=="443"){ flags.push({text:"Non-standard port :"+urlObj.port,level:"warning"}); structureScore+=22; }
   if(urlObj.protocol==="http:"){ flags.push({text:"Insecure HTTP protocol",level:"warning"}); structureScore+=18; }
   if(/[0-9]{4,}/.test(host)){ flags.push({text:"Long number sequence in domain",level:"warning"}); structureScore+=16; }
-
   let keywordHits=0; const found=[];
   for(const kw of SUSPICIOUS_KEYWORDS){ if(full.includes(kw)){ keywordHits++; found.push(kw); } }
   if(keywordHits>=3){ flags.push({text:"Multiple phishing keywords: "+found.slice(0,5).join(", "),level:"danger"}); contentScore+=85; }
   else if(keywordHits>=1){ flags.push({text:"Phishing keyword found: "+found.join(", "),level:"warning"}); contentScore+=40; }
-
   const hostBare=host.replace(/^www\./,"").split(".")[0];
   const {closestBrand,closestDist}=closestBrandMatch(hostBare);
   if(closestBrand && closestDist>0 && closestDist<=2 && closestBrand.split(".")[0].length>3){
     flags.push({text:"Domain closely resembles "+closestBrand+" (possible typosquat)",level:"danger"});
     brandScore+=85;
   }
-
   const categories={domain:Math.min(domainScore,100),structure:Math.min(structureScore,100),content:Math.min(contentScore,100),brand:Math.min(brandScore,100)};
   const overall=Math.min(Math.round(categories.domain*0.32+categories.structure*0.24+categories.content*0.24+categories.brand*0.20),100);
   return {score:overall,categories,flags};
 }
-
 async function checkGacs(host){
   try{
     const res=await fetch("https://gacs.app/api/public/check-domain?host="+encodeURIComponent(host));
@@ -769,13 +748,11 @@ async function checkGacs(host){
     return await res.json();
   }catch{ return {listed:false,error:true}; }
 }
-
 function levelFor(score){
   if(score>=THRESH_DANGEROUS) return "dangerous";
   if(score>=THRESH_SUSPICIOUS) return "suspicious";
   return "safe";
 }
-
 function saveHistory(entry){
   sessionHistory.unshift(entry);
   sessionHistory=sessionHistory.slice(0,50);
@@ -787,7 +764,6 @@ function saveHistory(entry){
   document.getElementById("statDangerous").textContent=stats.dangerous;
   document.getElementById("railScanCount").textContent=stats.total;
 }
-
 function renderHistory(){
   const historyList=document.getElementById("historyList");
   if(!sessionHistory.length){ historyList.innerHTML='<div class="empty">No scans yet</div>'; return; }
@@ -804,13 +780,11 @@ function renderHistory(){
     });
   });
 }
-
 async function runScanSequence(promise){
   const seq=document.getElementById("seq");
   const steps=[...seq.querySelectorAll(".seq-step")];
   seq.classList.add("visible");
   steps.forEach(s=>s.classList.remove("active","done"));
-
   const stepDelay=260;
   let i=0;
   const stepTimer=setInterval(()=>{
@@ -818,7 +792,6 @@ async function runScanSequence(promise){
     if(i<steps.length){ steps[i].classList.add("active"); i++; }
     else clearInterval(stepTimer);
   },stepDelay);
-
   const minWait=sleep(stepDelay*steps.length+150);
   const [dataResult]=await Promise.all([promise,minWait]);
   clearInterval(stepTimer);
@@ -827,42 +800,34 @@ async function runScanSequence(promise){
   seq.classList.remove("visible");
   return dataResult;
 }
-
 let lastResultSummary="";
-
 async function checkUrl(rawOverride){
   const urlInput=document.getElementById("urlInput");
   const raw=rawOverride||urlInput.value;
   const urlObj=normalizeUrl(raw);
   if(!urlObj){ toast("Enter a valid URL"); return; }
-
   const checkBtn=document.getElementById("checkBtn");
   const result=document.getElementById("result");
   const flagsList=document.getElementById("flagsList");
   const flagsSection=document.getElementById("flagsSection");
-
   checkBtn.disabled=true;
   result.classList.remove("visible");
   flagsList.innerHTML="";
   flagsSection.style.display="none";
-
   const host=urlObj.hostname;
   const heuristics=runHeuristics(urlObj);
   const gacs=await runScanSequence(checkGacs(host));
-
   let finalScore=heuristics.score;
   let level=levelFor(finalScore);
   let text="Looks Clean", sub="No major red flags detected";
   if(gacs.listed){ level="dangerous"; finalScore=Math.max(finalScore,Math.max(THRESH_DANGEROUS+5,92)); text="Known Scam Domain"; sub=(gacs.category||"phishing")+" · "+(gacs.severity||"high")+" severity"; }
   else if(level==="dangerous"){ text="High Risk"; sub="Multiple strong phishing signals"; }
   else if(level==="suspicious"){ text="Suspicious"; sub="Some warning signs present"; }
-
   document.getElementById("domainValue").textContent=host;
   document.getElementById("gacsValue").textContent=gacs.error?"Unavailable":gacs.listed?"LISTED":"Not listed";
   document.getElementById("protoValue").textContent=urlObj.protocol.replace(":","").toUpperCase();
   document.getElementById("scoreValue").textContent=finalScore+" / 100";
   document.getElementById("scoreNum").textContent=finalScore;
-
   requestAnimationFrame(()=>{
     document.getElementById("scoreRing").style.background=`conic-gradient(var(--accent) ${finalScore}%, var(--line) 0)`;
     const c=heuristics.categories;
@@ -871,12 +836,10 @@ async function checkUrl(rawOverride){
     document.getElementById("bdContent").style.width=c.content+"%"; document.getElementById("bdContentVal").textContent=c.content;
     document.getElementById("bdBrand").style.width=c.brand+"%"; document.getElementById("bdBrandVal").textContent=c.brand;
   });
-
   const verdict=document.getElementById("verdict");
   verdict.className="verdict "+level;
   document.getElementById("verdictText").textContent=text;
   document.getElementById("verdictSub").textContent=sub;
-
   if(heuristics.flags.length||gacs.listed){
     flagsSection.style.display="block";
     if(gacs.listed){
@@ -891,14 +854,11 @@ async function checkUrl(rawOverride){
       flagsList.appendChild(li);
     });
   }
-
   lastResultSummary=`URL: ${urlObj.href}\nVerdict: ${text} (score ${finalScore}/100)\nDomain: ${host}\nBreakdown: domain ${heuristics.categories.domain}, structure ${heuristics.categories.structure}, content ${heuristics.categories.content}, brand ${heuristics.categories.brand}\nSignals: ${heuristics.flags.map(f=>f.text).join("; ")||"none"}`;
-
   saveHistory({url:urlObj.href,level,score:finalScore,ts:Date.now()});
   result.classList.add("visible");
   checkBtn.disabled=false;
 }
-
 document.getElementById("checkBtn").addEventListener("click",()=>checkUrl());
 document.getElementById("urlInput").addEventListener("keydown",e=>{ if(e.key==="Enter") checkUrl(); });
 document.getElementById("copyBtn").addEventListener("click",()=>{
@@ -914,8 +874,6 @@ document.getElementById("askAiBtn").addEventListener("click",()=>{
   goToTab("ai");
   if(lastResultSummary) sendAiMessage("Here's a scan result — walk me through what it means and what I should do:\n\n"+lastResultSummary);
 });
-
-
 document.getElementById("extractBtn").addEventListener("click",()=>{
   const text=document.getElementById("textInput").value;
   const regex=/https?:\/\/[^\s<>"{}|\\^`\[\]]+/gi;
@@ -932,8 +890,6 @@ document.getElementById("extractBtn").addEventListener("click",()=>{
     });
   });
 });
-
-
 function urlToolMarkup(title,placeholder){
   return `<strong>${title}</strong><br><br>
     <input type="text" id="toolUrlInput" placeholder="${placeholder}" style="margin-bottom:10px"/>
@@ -951,7 +907,6 @@ function runToolUrl(compute){
   if(!urlObj){ out.innerHTML='<span style="color:#ff6b74">Enter a valid URL first.</span>'; return; }
   out.innerHTML=compute(urlObj);
 }
-
 document.querySelectorAll(".tool-card").forEach(card=>{
   card.addEventListener("click",()=>{
     document.querySelectorAll(".tool-card").forEach(c=>c.classList.remove("active-tool"));
@@ -961,7 +916,6 @@ document.querySelectorAll(".tool-card").forEach(card=>{
     const toolOutput=document.getElementById("toolOutput");
     toolResult.style.display="block";
     toolResult.scrollIntoView({behavior:"smooth",block:"nearest"});
-
     if(tool==="password"){
       toolOutput.innerHTML=`<strong>Password Strength</strong><br><br>
         <input type="password" id="pwInput" placeholder="Type a password (checked locally, never sent anywhere)" style="margin-bottom:12px" autocomplete="new-password"/>
@@ -984,7 +938,6 @@ document.querySelectorAll(".tool-card").forEach(card=>{
       });
       return;
     }
-
     if(tool==="decode"){
       toolOutput.innerHTML=`<strong>Link Decoder</strong><br><br>
         <textarea id="decodeInput" placeholder="Paste a Base64 string or URL-encoded link" style="min-height:80px"></textarea>
@@ -1000,7 +953,6 @@ document.querySelectorAll(".tool-card").forEach(card=>{
       });
       return;
     }
-
     if(tool==="sender"){
       toolOutput.innerHTML=`<strong>Sender Domain Check</strong><br><br>
         <input type="text" id="senderInput" placeholder="e.g. security@paypa1-support.com" style="margin-bottom:10px"/>
@@ -1021,7 +973,6 @@ document.querySelectorAll(".tool-card").forEach(card=>{
       });
       return;
     }
-
     if(tool==="bulk"){
       toolOutput.innerHTML=`<strong>Bulk Scanner</strong><br><br>
         <textarea id="bulkInput" placeholder="Paste multiple URLs, one per line" style="min-height:110px"></textarea>
@@ -1049,7 +1000,6 @@ document.querySelectorAll(".tool-card").forEach(card=>{
       });
       return;
     }
-
     if(tool==="ip"){
       toolOutput.innerHTML=urlToolMarkup("IP Detector","https://192.168.1.1/login");
       wireUrlTool(u=>{
@@ -1093,13 +1043,10 @@ document.querySelectorAll(".tool-card").forEach(card=>{
     }
   });
 });
-
-
 const aiMsgs=document.getElementById("aiMsgs");
 const aiInput=document.getElementById("aiInput");
 const aiSendBtn=document.getElementById("aiSendBtn");
 let aiHistory=[];
-
 function renderMarkdownLite(text){
   const esc=text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const lines=esc.split("\n");
@@ -1118,7 +1065,6 @@ function renderMarkdownLite(text){
   html=html.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/`(.+?)`/g,"<code>$1</code>");
   return html||"<p></p>";
 }
-
 function addMsg(role,text){
   const div=document.createElement("div");
   div.className="msg "+(role==="user"?"user":"ai");
@@ -1136,7 +1082,6 @@ function addMsg(role,text){
   aiMsgs.scrollTop=aiMsgs.scrollHeight;
   return div;
 }
-
 function showTyping(){
   const div=document.createElement("div");
   div.className="ai-typing"; div.id="aiTyping";
@@ -1145,10 +1090,8 @@ function showTyping(){
   aiMsgs.scrollTop=aiMsgs.scrollHeight;
 }
 function hideTyping(){ const t=document.getElementById("aiTyping"); if(t) t.remove(); }
-
 function localAnalyze(text){
   const t=text.toLowerCase();
-
   if(t.includes("here's a scan result") || t.includes("verdict:") && t.includes("score")){
     if(t.includes("known scam") || t.includes("high risk") || /score\s*(9\d|100)/.test(t)){
       return `**Likely Scam / High Risk**
@@ -1184,7 +1127,6 @@ No major red flags in the heuristic + blacklist pass.
 
 If something still feels off, describe the full message and I can dig further.`;
   }
-
   if(/package|parcel|delivery|could not be delivered|track.*(package|order)|bit\.ly\/pkg|confirm your address/.test(t)){
     return `**Likely Scam** — classic package / delivery text pattern
 
@@ -1202,7 +1144,6 @@ What to do:
 
 Real carriers almost never ask you to "confirm" personal details via a random SMS link.`;
   }
-
   if(/bank|account.*(verify|suspend|lock|unusual)|verify.*(account|identity)|call.*(bank|support)|security.*(department|team)|otp|one.?time.?password|card.*(block|fraud)/.test(t)){
     return `**Likely Scam** — bank / account impersonation pattern
 
@@ -1222,7 +1163,6 @@ Safe steps:
 - Never share OTP, PIN, password, or seed phrase
 - If you already gave info, freeze the card/account and report to the bank right away`;
   }
-
   if(/crypto|nft|airdrop|wallet|seed.?phrase|metamask|binance|coinbase|claim.*(token|reward|nft)|connect.?wallet|gas.?fee/.test(t)){
     return `**Likely Scam** — common crypto / NFT airdrop pattern
 
@@ -1240,7 +1180,6 @@ Rules that keep you safe:
 
 If you already connected a wallet to a suspicious site, move funds to a new wallet (new seed) as soon as possible and revoke approvals on a trusted tool.`;
   }
-
   if(/gift.?card|itunes|steam.?card|google.?play.?card|wire.?transfer|western.?union|send.*(money|payment)|pay.*(fee|tax|release)/.test(t)){
     return `**Likely Scam** — payment / gift-card demand
 
@@ -1252,7 +1191,6 @@ Legitimate companies, government agencies, and banks do **not** ask you to pay f
 
 If you already paid, contact the gift-card issuer / payment provider immediately and file a report with local authorities or consumer protection.`;
   }
-
   if(/romance|dating|investment.*(return|guaranteed)|double.?your|work.?from.?home.*(fee|pay)|job.*(offer|placement).*fee/.test(t)){
     return `**Suspicious / High risk of scam**
 
@@ -1268,7 +1206,6 @@ Protect yourself:
 
 If money already left, document everything and report to the platform and local cybercrime / consumer agencies.`;
   }
-
   const urlMatch=text.match(/https?:\/\/[^\s<>"']+/i) || text.match(/(?:^|\s)([a-z0-9][-a-z0-9.]*\.[a-z]{2,}(?:\/[^\s]*)?)/i);
   if(urlMatch){
     const raw=urlMatch[0].trim();
@@ -1295,7 +1232,6 @@ Advice:
 (This is offline analysis only — for live blacklist status use the Scan tab.)`;
     }
   }
-
   return `I can help assess scam risk from messages, links, or what happened.
 
 Paste any of these and I'll give a clear verdict:
@@ -1307,7 +1243,6 @@ Common patterns I flag quickly: package delivery texts, bank "verify your accoun
 
 **Never share passwords, 2FA codes, or seed phrases** with anyone — including this tool.`;
 }
-
 async function sendAiMessage(overrideText){
   const text=(overrideText!==undefined?overrideText:aiInput.value).trim();
   if(!text) return;
@@ -1323,7 +1258,6 @@ async function sendAiMessage(overrideText){
   aiHistory.push({role:"assistant",content:reply});
   aiSendBtn.disabled=false;
 }
-
 aiSendBtn.addEventListener("click",()=>sendAiMessage());
 aiInput.addEventListener("keydown",e=>{
   if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendAiMessage(); }
@@ -1331,8 +1265,151 @@ aiInput.addEventListener("keydown",e=>{
 document.querySelectorAll(".chip").forEach(chip=>{
   chip.addEventListener("click",()=>sendAiMessage(chip.dataset.prompt));
 });
-
-
+let currentImageFile=null;
+let lastImageText="";
+const imageInput=document.getElementById("imageInput");
+const imagePickBtn=document.getElementById("imagePickBtn");
+const imageClearBtn=document.getElementById("imageClearBtn");
+const imageHint=document.getElementById("imageHint");
+const imagePreviewWrap=document.getElementById("imagePreviewWrap");
+const imagePreview=document.getElementById("imagePreview");
+const imageScanBtn=document.getElementById("imageScanBtn");
+const imageResult=document.getElementById("imageResult");
+const imageSeq=document.getElementById("imageSeq");
+imagePickBtn.addEventListener("click",()=>imageInput.click());
+imageInput.addEventListener("change",()=>{
+  const file=imageInput.files?.[0];
+  if(!file) return;
+  if(!file.type.startsWith("image/")){
+    toast("Please select an image file");
+    imageInput.value="";
+    return;
+  }
+  currentImageFile=file;
+  imageHint.textContent="Selected: "+file.name;
+  imageClearBtn.style.display="inline-block";
+  imageScanBtn.disabled=false;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    imagePreview.src=reader.result;
+    imagePreviewWrap.style.display="block";
+  };
+  reader.readAsDataURL(file);
+});
+imageClearBtn.addEventListener("click",()=>{
+  currentImageFile=null;
+  imageInput.value="";
+  imageHint.textContent="JPEG, PNG, WebP, GIF — processed locally";
+  imagePreviewWrap.style.display="none";
+  imageClearBtn.style.display="none";
+  imageScanBtn.disabled=true;
+  imageResult.style.display="none";
+  imageSeq.classList.remove("visible");
+});
+async function runImageScanSequence(promise){
+  const steps=[...imageSeq.querySelectorAll(".seq-step")];
+  imageSeq.classList.add("visible");
+  steps.forEach(s=>s.classList.remove("active","done"));
+  let i=0;
+  const stepDelay=320;
+  const timer=setInterval(()=>{
+    if(i>0){
+      steps[i-1].classList.remove("active");
+      steps[i-1].classList.add("done");
+    }
+    if(i<steps.length){
+      steps[i].classList.add("active");
+      i++;
+    } else clearInterval(timer);
+  },stepDelay);
+  const minWait=sleep(stepDelay*steps.length+200);
+  const [result]=await Promise.all([promise,minWait]);
+  clearInterval(timer);
+  steps.forEach(s=>{ s.classList.remove("active"); s.classList.add("done"); });
+  await sleep(180);
+  imageSeq.classList.remove("visible");
+  return result;
+}
+imageScanBtn.addEventListener("click",async ()=>{
+  if(!currentImageFile) return;
+  imageScanBtn.disabled=true;
+  imageResult.style.display="none";
+  try{
+    const {data:{text}}=await runImageScanSequence(
+      Tesseract.recognize(currentImageFile,"eng",{})
+    );
+    const cleaned=(text||"").replace(/\s+/g," ").trim();
+    lastImageText=cleaned;
+    if(!cleaned||cleaned.length<8){
+      toast("Could not extract readable text from this image");
+      imageScanBtn.disabled=false;
+      return;
+    }
+    const reply=localAnalyze(cleaned);
+    let score=15;
+    let level="safe";
+    let verdictText="Looks relatively clean";
+    let sub="No strong scam patterns detected in the extracted text";
+    if(/likely scam|high risk|known scam/i.test(reply)){
+      score=88;
+      level="dangerous";
+      verdictText="High Risk / Likely Scam";
+      sub="Strong phishing or social-engineering signals found";
+    } else if(/suspicious|warning|be careful|high risk of scam/i.test(reply)){
+      score=48;
+      level="suspicious";
+      verdictText="Suspicious";
+      sub="Some warning signs present — verify carefully";
+    }
+    document.getElementById("imageExtractedText").textContent=cleaned;
+    const verdictEl=document.getElementById("imageVerdict");
+    verdictEl.className="verdict "+level;
+    document.getElementById("imageVerdictText").textContent=verdictText;
+    document.getElementById("imageVerdictSub").textContent=sub;
+    document.getElementById("imageScoreNum").textContent=score;
+    document.getElementById("imageScoreRing").style.background=`conic-gradient(var(--accent) ${score}%, var(--line) 0)`;
+    const flagsList=document.getElementById("imageFlagsList");
+    const flagsSection=document.getElementById("imageFlagsSection");
+    flagsList.innerHTML="";
+    const lines=reply.split("\n").filter(l=>l.trim().startsWith("-")||l.trim().startsWith("•"));
+    if(lines.length){
+      flagsSection.style.display="block";
+      lines.slice(0,6).forEach(line=>{
+        const li=document.createElement("li");
+        if(/do not|never|refuse|high risk|scam/i.test(line)) li.className="danger";
+        li.innerHTML=`<span class="dot"></span><span>${line.replace(/^[-•]\s*/,"")}</span>`;
+        flagsList.appendChild(li);
+      });
+    } else {
+      flagsSection.style.display="none";
+    }
+    imageResult.style.display="block";
+    imageResult.classList.add("visible");
+    saveHistory({
+      url:"[Image] "+(currentImageFile.name||"screenshot"),
+      level,
+      score,
+      ts:Date.now()
+    });
+    toast("Image analyzed","safe");
+  } catch(err){
+    console.error(err);
+    toast("OCR failed — try a clearer screenshot");
+  } finally {
+    imageScanBtn.disabled=false;
+  }
+});
+document.getElementById("imageAskAiBtn")?.addEventListener("click",()=>{
+  if(!lastImageText) return;
+  goToTab("ai");
+  sendAiMessage("I scanned this image of a possible scam/phishing message. Here's the extracted text — give me a full analysis and what I should do:\n\n"+lastImageText);
+});
+document.getElementById("imageCopyTextBtn")?.addEventListener("click",()=>{
+  if(!lastImageText) return;
+  navigator.clipboard.writeText(lastImageText)
+    .then(()=>toast("Extracted text copied","safe"))
+    .catch(()=>toast("Copy failed"));
+});
 buildThemeGrid();
 applyTheme("crimson");
 </script>
